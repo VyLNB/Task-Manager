@@ -21,7 +21,7 @@ const LoginPage: React.FC = () => {
     try {
       const response = await signin({ email, password });
       console.log("Login response:", response);
-      navigate('/teacher/dashboard'); 
+      navigate('/todoapp/dashboard'); 
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Đăng nhập thất bại');
     } finally {

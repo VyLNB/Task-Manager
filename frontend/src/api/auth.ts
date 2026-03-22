@@ -58,7 +58,6 @@ export async function signup(
   // Validate trước khi gửi
   SignupPayloadSchema.parse(credentials);
   
-  // Backend endpoint là /auth/register
   const response = await apiRequest<AuthResponse>(
     "post",
     "/auth/register",
@@ -74,7 +73,6 @@ export async function signup(
 }
 
 export async function signout(): Promise<void> {
-  // Backend endpoint là /auth/logout và method là POST, không phải DELETE
   await apiRequest<void>("post", "/auth/logout", {});
   
   // Xóa token khỏi localStorage
@@ -82,7 +80,6 @@ export async function signout(): Promise<void> {
 }
 
 export async function getProfile(): Promise<UserProfileResponse> {
-  // Backend endpoint là /auth/me
   return apiRequest<UserProfileResponse>("get", "/auth/me");
 }
 
