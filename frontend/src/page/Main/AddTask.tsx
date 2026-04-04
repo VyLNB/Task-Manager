@@ -1,11 +1,9 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ToDoForm from '../../components/ToDoForm';
-import { createTask } from '../../api/todo';
+import { createTask } from '../../services/todo';
 import type { ToDoItemFormData } from '../../interfaces/todo';
 
-// Interface cục bộ của ToDoForm (để khớp kiểu dữ liệu khi nhận từ Form)
 interface ToDoFormItem {
     id?: string;
     title: string;
@@ -23,16 +21,15 @@ const AddTask = () => {
         try {
             setIsSubmitting(true);
             
-            // Chuẩn bị dữ liệu gửi lên API (chỉ lấy title và description)
             const payload: ToDoItemFormData = {
                 title: formData.title,
-                description: formData.description
+                description: formData.description,
+                status: 'TO DO', 
             };
 
             console.log('Creating task:', payload);
             await createTask(payload);
             
-            // Tạo thành công thì quay về danh sách
             navigate("/todoapp/tasks");
             
         } catch (error) {
@@ -59,8 +56,6 @@ const AddTask = () => {
             <ToDoForm 
                 isEditMode={false} 
                 onSubmit={handleSubmit}
-                // Nếu ToDoForm của bạn chưa hỗ trợ prop onCancel, bạn có thể bỏ dòng này
-                // hoặc cập nhật ToDoForm để xử lý nút Hủy
                 onCancel={handleCancel}
             />
         </div>

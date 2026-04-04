@@ -1,12 +1,12 @@
 import { createBrowserRouter } from "react-router-dom"
-import Dashboard from "../page/TeacherPage/Dashboard";
-import TeacherLayout from "../page/TeacherPage/TeacherLayout";
-import TasksPage from "../page/TeacherPage/TasksPage";
-import TaskDetail from "../page/TeacherPage/TaskDetail";
-import AddTask from "../page/TeacherPage/AddTask";
+import Dashboard from "../page/Main/Dashboard";
+import MainLayout from "../page/Main/MainLayout";
+import TasksPage from "../page/Main/TasksPage";
+import TaskDetail from "../page/Main/TaskDetail";
+import AddTask from "../page/Main/AddTask";
 import LoginPage from "../page/auth/LoginPage";
 import RegisterPage from "../page/auth/RegisterPage";
-import Calendar from "../page/TeacherPage/Calendar";
+import Calendar from "../page/Main/Calendar";
 
 const router = createBrowserRouter([
     {
@@ -20,7 +20,7 @@ const router = createBrowserRouter([
     {
         path: "/todoapp",
         element: (
-            <TeacherLayout/>
+            <MainLayout/>
         ), 
         children: [
             {

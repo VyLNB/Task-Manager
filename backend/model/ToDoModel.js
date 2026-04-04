@@ -10,9 +10,10 @@ const ToDoSchema = new mongoose.Schema(
             type: String,
             required: false
         },
-        completed: {
-            type: Boolean,
-            default: false
+        status: {
+            type: String,
+            enum: ['TO DO', 'IN PROGRESS', 'COMPLETED'],
+            default: 'TO DO'
         }
     },
     { timestamps: true }

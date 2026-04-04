@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import InputField from '../../components/inputField';
-import { signin } from '../../api/auth';
+import { signin } from '../../services/auth';
 
 
 

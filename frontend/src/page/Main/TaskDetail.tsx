@@ -2,7 +2,7 @@
 import ToDoForm from "../../components/ToDoForm";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getAllToDo, updateTask } from "../../api/todo";
+import { getAllToDo, updateTask } from "../../services/todo";
 import type { ToDoItemInterface } from "../../interfaces/todo";
 
 // Interface nội bộ để match với props của ToDoForm

@@ -41,20 +41,28 @@ export const createToDo = async (req, res) => {
 
 // cập nhật công việc
 export const updateTodo = async (req, res) => {
-    try {       
+    try {
+        const updatedData = {};
+
+        if (req.body.title !== undefined) updatedData.title = req.body.title;
+        if (req.body.description !== undefined) updatedData.description = req.body.description;
+        if (req.body.status !== undefined) updatedData.status = req.body.status;
+
         const todo = await ToDoModel.findByIdAndUpdate(
-            req.params.id, 
-            req.body,
-            { new: true, runValidators: true }  
+            req.params.id,
+            updatedData,
+            { new: true, runValidators: true }
         );
-        
+
         if (!todo) {
             return res.status(404).json({ message: "Không tìm thấy công việc" });
         }
 
         res.status(200).json(todo);
     } catch (error) {
-        console.error("Error:", error);
-        res.status(500).json({ message: "Lỗi khi cập nhật công việc", error: error.message });
+        res.status(500).json({
+            message: "Lỗi khi cập nhật công việc",
+            error: error.message
+        });
     }
 };
