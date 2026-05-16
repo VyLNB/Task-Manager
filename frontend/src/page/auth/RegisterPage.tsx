@@ -28,7 +28,7 @@ const handleSubmit = async (e: React.FormEvent) => {
     setLoading(true);
 
     try {
-      await signup({ name: username, email, password });
+      await signup({email, password, fullName: username });
       alert('Đăng ký thành công! Vui lòng đăng nhập.');
       navigate('/'); // Redirect sau khi đăng ký thành công
     } catch (err) {

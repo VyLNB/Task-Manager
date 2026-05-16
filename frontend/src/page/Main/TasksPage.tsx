@@ -28,7 +28,7 @@ export default function TaskPage() {
   
   
   const handleDragStart = (e: React.DragEvent, id: string) => {
-    e.dataTransfer.setData('taskId', id);
+    e.dataTransfer.setData('text/plain', id);
   };
 
   // thả task vào cột mới, cập nhật trạng thái của task đó

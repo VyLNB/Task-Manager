@@ -31,7 +31,7 @@ app.use('/api', router);
 // Root route
 app.get('/', (req, res) => {
   res.json({ 
-    message: 'ToDo List API is running',
+    message: 'Task List API is running',
     version: '1.0.0',
     status: 'running'
   });

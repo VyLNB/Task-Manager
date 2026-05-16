@@ -9,7 +9,7 @@ const SigninPayloadSchema = z.object({
 });
 
 const SignupPayloadSchema = z.object({
-  name: z.string().min(2, "Tên phải có ít nhất 2 ký tự"),
+  fullName: z.string().min(2, "Tên phải có ít nhất 2 ký tự"),
   email: z.string().email("Email không hợp lệ"),
   password: z.string().min(6, "Mật khẩu phải có ít nhất 6 ký tự"),
 });
@@ -19,10 +19,14 @@ export type SignupPayload = z.infer<typeof SignupPayloadSchema>;
 
 // Response types phải khớp với backend
 export interface AuthResponse {
-  success: boolean;
   message: string;
-  token: string; // ← Backend trả về token
-  user: AuthUser; // ← Backend trả về user, không phải data
+  data?: {
+    accessToken?: string; 
+    user?: AuthUser;
+    id?: string;
+    email?: string;
+    fullName?: string;
+  };
 }
 
 export interface UserProfileResponse {
@@ -45,8 +49,8 @@ export async function signin(
   );
   
   // Lưu token vào localStorage
-  if (response.token) {
-    localStorage.setItem("token", response.token);
+  if (response.data && response.data.accessToken) {
+    localStorage.setItem("token", response.data.accessToken);
   }
   
   return response;
@@ -65,8 +69,8 @@ export async function signup(
   );
   
   // Lưu token vào localStorage
-  if (response.token) {
-    localStorage.setItem("token", response.token);
+  if (response.data && response.data.accessToken) {
+    localStorage.setItem("token", response.data.accessToken);
   }
   
   return response;

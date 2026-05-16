@@ -15,6 +15,19 @@ const apiClient = axios.create({
     withCredentials: true,
 });
 
+apiClient.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.set("Authorization", `Bearer ${token}`);
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 export async function apiRequest<T>(
   method: "get" | "post" | "put" | "delete",
   url: string,

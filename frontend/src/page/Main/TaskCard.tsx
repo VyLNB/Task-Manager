@@ -1,5 +1,6 @@
+import { useNavigate } from 'react-router-dom';
 import type { Task } from './TasksPage';
-import { Calendar, CheckSquare, CheckCircle2 } from 'lucide-react';
+import { Calendar, CheckSquare, CheckCircle2, Edit } from 'lucide-react';
 export const TaskCard = ({
   task,
   onDragStart,
@@ -8,7 +9,7 @@ export const TaskCard = ({
   onDragStart: (e: React.DragEvent, id: string) => void;
 }) => {
   const isCompleted = task.status === 'COMPLETED';
-
+  const navigate = useNavigate();
   return (
     <div
       draggable
@@ -70,11 +71,11 @@ export const TaskCard = ({
 
       {/* Footer: Avatars & Subtasks */}
       <div className="flex justify-between items-center mt-auto">
-        <div className="flex -space-x-2">
-          {/* Fake Avatars */}
+        {/* <div className="flex -space-x-2">
+        
           <div className="w-6 h-6 rounded-full bg-blue-500 border border-[#18261F]"></div>
           <div className="w-6 h-6 rounded-full bg-purple-500 border border-[#18261F]"></div>
-        </div>
+        </div> */}
         <div className={`flex items-center text-xs font-semibold ${isCompleted ? 'text-[#2DD480]' : 'text-gray-400'}`}>
           {isCompleted ? (
             <span className="bg-[#2DD480]/10 px-2 py-1 rounded-md flex items-center">
@@ -87,6 +88,12 @@ export const TaskCard = ({
             </>
           )}
         </div>
+
+        {/* edit button */}
+        <button className="bg-[#2DD480] text-[#0D1511] px-5 py-2 rounded-full font-bold text-sm flex items-center gap-2 hover:bg-[#25b56d] transition-colors"
+        onClick={() => navigate(`/todoapp/tasks/${task.id}`)}>
+          <Edit size={16} /> Edit
+        </button>
       </div>
     </div>
   );

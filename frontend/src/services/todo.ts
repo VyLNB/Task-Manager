@@ -3,11 +3,11 @@ import { apiRequest } from "./client";
 import type { ToDoItemInterface, ToDoItemFormData } from "../interfaces/todo";
 
 export async function getAllToDo(): Promise<ToDoItemInterface[]> {
-    return apiRequest<ToDoItemInterface[]>("get", `/getAll`);
+    return apiRequest<ToDoItemInterface[]>("get", `/tasks/getAll`);
 }
 
 export async function getToDoById(id: string): Promise<ToDoItemInterface> {
-    return apiRequest<ToDoItemInterface>("get", `/${id}`);
+    return apiRequest<ToDoItemInterface>("get", `/tasks/${id}`);
 }
 
 // Cập nhật hàm updateTask: 
@@ -16,10 +16,10 @@ export async function getToDoById(id: string): Promise<ToDoItemInterface> {
 export async function updateTask(id: string, data: ToDoItemFormData): Promise<ToDoItemInterface> {
     // Lưu ý: Return type thường là object đã update, không phải array. 
     // Nếu backend của bạn trả về array, hãy đổi lại thành Promise<ToDoItemInterface[]>
-    return apiRequest<ToDoItemInterface>("put", `/${id}`, data); 
+    return apiRequest<ToDoItemInterface>("put", `/tasks/${id}`, data); 
 }
 
 export async function createTask(data: ToDoItemFormData): Promise<ToDoItemInterface> {
     // API tạo mới thường trả về object vừa tạo
-    return apiRequest<ToDoItemInterface>("post", `/createNew`, data);
+    return apiRequest<ToDoItemInterface>("post", `/tasks/createNew`, data);
 }

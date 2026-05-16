@@ -31,7 +31,7 @@ export const KanbanColumn = ({
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsOver(false);
-    const taskId = e.dataTransfer.getData('taskId');
+    const taskId = e.dataTransfer.getData('text/plain');
     if (taskId) {
       onDrop(title, taskId);
     }
