@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import type { Task } from './TasksPage';
+import type { Task } from '../../pages/main/TasksPage';
 import { Calendar, CheckSquare, CheckCircle2, Edit } from 'lucide-react';
 export const TaskCard = ({
   task,

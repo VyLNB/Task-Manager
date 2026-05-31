@@ -36,7 +36,7 @@ const FeatureUnderDevelopment = () => {
                             placeholder="nhap-email-cua-ban@example.cc"
                             className="flex-1 bg-gray-50 border border-gray-200 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block p-3 outline-none transition-all"
                         />
-                        <button className="bg-purple-500 hover:bg-purple-600 text-white font-medium rounded-lg text-sm px-5 py-3 text-center flex items-center justify-center gap-2 transition-colors shadow-md shadow-purple-200">
+                        <button className="bg-[#2DD480] hover:bg-[#25b56d] text-[#0D1511] font-bold rounded-lg text-sm px-5 py-3 text-center flex items-center justify-center gap-2 transition-colors shadow-md shadow-[#2DD480]/20">
                             <Bell size={18} />
                             <span className="whitespace-nowrap">Nhận thông báo</span>
                         </button>

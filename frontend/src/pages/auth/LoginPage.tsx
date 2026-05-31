@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import InputField from '../../components/inputField';
+import InputField from '../../components/InputField';
 import { signin } from '../../services/auth';
 
 
@@ -74,7 +74,7 @@ const LoginPage: React.FC = () => {
           {/* Sign In Button */}
           <button
             onClick={handleSubmit}
-            className="w-full bg-green-500 hover:bg-green-950 text-white font-semibold py-3 rounded-lg transition shadow-lg"
+            className="w-full bg-[#2DD480] hover:bg-[#25b56d] text-[#0D1511] font-bold py-3 rounded-lg transition shadow-lg"
           >
             Đăng nhập
           </button>
@@ -89,7 +89,7 @@ const LoginPage: React.FC = () => {
         {/* Register Link */}
         <p className="text-center text-white/70 text-sm">
           Chưa có tài khoản?{' '}
-          <button className="text-white font-semibold hover:underline" onClick={() => {navigate("/register")}}>
+          <button className="text-[#2DD480] font-semibold hover:underline" onClick={() => {navigate("/register")}}>
             Đăng ký ngay
           </button>
         </p>

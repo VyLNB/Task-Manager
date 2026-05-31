@@ -1,12 +1,12 @@
 import { createBrowserRouter } from "react-router-dom"
-import Dashboard from "../page/Main/Dashboard";
-import MainLayout from "../page/Main/MainLayout";
-import TasksPage from "../page/Main/TasksPage";
-import TaskDetail from "../page/Main/TaskDetail";
-import AddTask from "../page/Main/AddTask";
-import LoginPage from "../page/auth/LoginPage";
-import RegisterPage from "../page/auth/RegisterPage";
-import Calendar from "../page/Main/Calendar";
+import Dashboard from "../pages/main/Dashboard";
+import MainLayout from "../layouts/MainLayout";
+import TasksPage from "../pages/main/TasksPage";
+import TaskDetail from "../pages/main/TaskDetail";
+import AddTask from "../pages/main/AddTask";
+import LoginPage from "../pages/auth/LoginPage";
+import RegisterPage from "../pages/auth/RegisterPage";
+import Calendar from "../pages/main/Calendar";
 
 const router = createBrowserRouter([
     {

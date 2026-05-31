@@ -114,7 +114,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                     {/* Sign Up Button */}
                     <button
                         onClick={handleSubmit}
-                        className="w-full bg-green-500 hover:bg-green-950 text-white font-semibold py-2.5 text-sm rounded-lg transition shadow-lg"
+                        className="w-full bg-[#2DD480] hover:bg-[#25b56d] text-[#0D1511] font-bold py-2.5 text-sm rounded-lg transition shadow-lg"
                     >
                         Đăng ký 
                     </button>
@@ -128,7 +128,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                 {/* Login Link */}
                 <p className="text-center text-white/70 text-xs">
                     Đã có tài khoản?{' '}
-                    <button className="text-white font-semibold hover:underline" onClick={() => {navigate('/')}}>
+                    <button className="text-[#2DD480] font-semibold hover:underline" onClick={() => {navigate('/')}}>
                         Đăng nhập ngay
                     </button>
                 </p>

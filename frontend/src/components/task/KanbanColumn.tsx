@@ -1,4 +1,4 @@
-import type { Task, Status} from './TasksPage';
+import type { Task, Status} from '../../pages/main/TasksPage';
 import { TaskCard } from './TaskCard';
 import { useState } from 'react';
 import { MoreHorizontal, Plus } from 'lucide-react';

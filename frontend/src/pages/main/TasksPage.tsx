@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { CheckSquare, Filter } from 'lucide-react';
-import { KanbanColumn } from './KanbanColumn';
+import { KanbanColumn } from '../../components/task/KanbanColumn';
 import { getAllToDo, updateTask } from '../../services/todo';
 import { useNavigate } from 'react-router-dom';
 

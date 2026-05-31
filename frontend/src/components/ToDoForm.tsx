@@ -19,9 +19,9 @@ interface TaskDetailProps {
   onCancel?: () => void;
 }
 
-const ToDoForm: React.FC<TaskDetailProps> = ({ 
-  initialData, 
-  isEditMode = false, 
+const ToDoForm: React.FC<TaskDetailProps> = ({
+  initialData,
+  isEditMode = false,
   onSubmit,
   onDelete,
   // onCancel 
@@ -139,7 +139,7 @@ const ToDoForm: React.FC<TaskDetailProps> = ({
               Xóa
             </button>
           )}
-          
+
           <div className="flex gap-3 ml-auto">
             <button
               type="button"
@@ -151,7 +151,7 @@ const ToDoForm: React.FC<TaskDetailProps> = ({
             <button
               type="button"
               onClick={handleSubmit}
-              className="px-6 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="px-6 py-2 text-white bg-[#2DD480] rounded-md hover:bg-[#2DD480]/80 focus:outline-none focus:ring-2 focus:ring-[#2DD480]/50"
             >
               {isEditMode ? 'Cập nhật' : 'Tạo công việc'}
             </button>
