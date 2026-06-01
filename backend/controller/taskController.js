@@ -10,6 +10,15 @@ export const getAllTasks = async (req, res) => {
     }
 };
 
+export const getTasksByWorkspace = async (req, res) => {
+    try {
+        const tasks = await TaskModel.find({ workspaceId: req.params.workspaceId }).sort({ createdAt: -1 });
+        res.status(200).json(tasks);
+    } catch (error) {
+        res.status(500).json({ message: "Lỗi khi lấy danh sách công việc của workspace", error });
+    }
+};
+
 export const getTaskById = async (req, res) => {
     try {
         const task = await TaskModel.findById(req.params.id);
@@ -28,7 +37,8 @@ export const createTask = async (req, res) => {
     const newTask = new TaskModel({
         title: req.body.title,
         description: req.body.description,
-        userId: req.userId,
+        creatorId: req.userId,
+        workspaceId: req.body.workspaceId,
         priority: req.body.priority,
         dueDate: req.body.dueDate,
         startDate: req.body.startDate,

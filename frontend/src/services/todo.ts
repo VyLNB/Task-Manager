@@ -10,6 +10,10 @@ export async function getToDoById(id: string): Promise<ToDoItemInterface> {
     return apiRequest<ToDoItemInterface>("get", `/tasks/${id}`);
 }
 
+export async function getWorkspaceTasks(workspaceId: string): Promise<ToDoItemInterface[]> {
+    return apiRequest<ToDoItemInterface[]>("get", `/tasks/workspace/${workspaceId}`);
+}
+
 // Cập nhật hàm updateTask: 
 // 1. Nhận vào id
 // 2. Nhận vào data chuẩn (ToDoItemFormData)

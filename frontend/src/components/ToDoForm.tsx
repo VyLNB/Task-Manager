@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import ConfirmDialog from '../components/ConfirmDialog.tsx';
+import ConfirmDialog from './common/ConfirmDialog';
 
 interface ToDoItemInterface {
   id?: string;
@@ -24,7 +24,7 @@ const ToDoForm: React.FC<TaskDetailProps> = ({
   isEditMode = false,
   onSubmit,
   onDelete,
-  // onCancel 
+  onCancel
 }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -85,7 +85,11 @@ const ToDoForm: React.FC<TaskDetailProps> = ({
   // Hàm này được gọi khi user CONFIRM trong dialog
   const handleConfirmCancel = () => {
     setIsCancelDialogOpen(false);
-    navigate("/todoapp/tasks");
+    if (onCancel) {
+      onCancel();
+    } else {
+      navigate("/todoapp/tasks");
+    }
   };
 
   return (

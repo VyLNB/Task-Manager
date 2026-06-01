@@ -3,9 +3,11 @@ import { CheckSquare, Filter } from 'lucide-react';
 import { KanbanBoard } from '../../components/task/KanbanBoard';
 import { CreateTaskModal } from '../../components/task/CreateTaskModal';
 import { useTasks } from '../../hooks/useTasks';
+import { useParams } from 'react-router-dom';
 
-export default function TaskPage() {
-  const { tasks, loading, error, fetchTasks, handleUpdateTaskStatus } = useTasks();
+export default function WorkspaceKanban() {
+  const { id: workspaceId } = useParams<{ id: string }>();
+  const { tasks, loading, error, fetchTasks, handleUpdateTaskStatus } = useTasks(workspaceId);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
 
@@ -16,12 +18,12 @@ export default function TaskPage() {
         {/* Breadcrumb & Header */}
         <div className="mb-8">
           <p className="text-[#2DD480] text-xs font-bold tracking-wider mb-2">
-            FACULTY DASHBOARD <span className="text-gray-500 mx-1">&gt;</span> TASK BOARD
+            WORKSPACE <span className="text-gray-500 mx-1">&gt;</span> KANBAN BOARD
           </p>
           <div className="flex justify-between items-end">
             <div>
-              <h1 className="text-3xl font-bold text-white mb-1">Task Management</h1>
-              <p className="text-gray-400 text-sm">Manage your academic priorities and deadlines.</p>
+              <h1 className="text-3xl font-bold text-white mb-1">Workspace Tasks</h1>
+              <p className="text-gray-400 text-sm">Quản lý các công việc trong Workspace này.</p>
             </div>
             <div className="flex gap-3">
               <button 
@@ -44,6 +46,7 @@ export default function TaskPage() {
             isOpen={isModalOpen} 
             onClose={() => setIsModalOpen(false)} 
             onSuccess={fetchTasks} 
+            workspaceId={workspaceId}
         />
 
         <KanbanBoard 

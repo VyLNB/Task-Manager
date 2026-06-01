@@ -15,10 +15,28 @@ const TaskSchema = new mongoose.Schema(
             enum: ['TO DO', 'IN PROGRESS', 'COMPLETED'],
             default: 'TO DO'
         },
-        userId: {
+        position: {
+            type: Number,
+            required: true,
+            default: 0,
+        },
+        workspaceId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Workspaces',
+            required: true,
+            description: "Task này thuộc về Nhóm/Dự án nào"
+        },
+        creatorId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Users',
-            required: true
+            required: true,
+            description: "Người đã tạo ra task này"
+        },
+        assigneeId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Users',
+            default: null,
+            description: "Thành viên được Leader giao thực hiện task này"
         },
         priority: {
             type: String,
@@ -40,6 +58,9 @@ const TaskSchema = new mongoose.Schema(
     },
     { timestamps: true }
 );
+
+TaskSchema.index({ workspaceId: 1 });
+TaskSchema.index({ assigneeId: 1 });
 
 const TaskModel = mongoose.model('Tasks', TaskSchema, 'Tasks');
 

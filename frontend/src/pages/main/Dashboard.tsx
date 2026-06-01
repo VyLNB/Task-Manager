@@ -1,4 +1,4 @@
-import FeatureUnderDevelopment from "../../components/FeatureUnderDevelopment"
+import FeatureUnderDevelopment from "../../components/common/FeatureUnderDevelopment"
 
 const Dashboard = () => {
     return <FeatureUnderDevelopment/>;

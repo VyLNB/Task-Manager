@@ -11,4 +11,5 @@ export interface ToDoItemFormData {
     title: string;
     description: string;
     status: 'TO DO' | 'IN PROGRESS' | 'COMPLETED';
+    workspaceId?: string;
 }
