@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import type { WorkspaceInterface } from '../../interfaces/workspace';
 import { getWorkspaces, createWorkspace } from '../../services/workspace';
-import { Users, Plus, Shield } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Users, Plus } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { WorkspaceCard } from '../../components/workspace/WorkSpaceCard';
 
 const WorkspacePage = () => {
+    const navigate = useNavigate();
     const [workspaces, setWorkspaces] = useState<WorkspaceInterface[]>([]);
     const [loading, setLoading] = useState(true);
     const [newWorkspaceName, setNewWorkspaceName] = useState('');
     const [creating, setCreating] = useState(false);
+    const [isCreatingUI, setIsCreatingUI] = useState(false);
     const [error, setError] = useState('');
 
     const fetchWorkspaces = async () => {
@@ -36,6 +39,7 @@ const WorkspacePage = () => {
             setCreating(true);
             await createWorkspace(newWorkspaceName);
             setNewWorkspaceName('');
+            setIsCreatingUI(false);
             await fetchWorkspaces();
         } catch (err: any) {
             setError(err.message || 'Lỗi khi tạo workspace');
@@ -45,84 +49,97 @@ const WorkspacePage = () => {
     };
 
     return (
-        <div className="p-6 max-w-4xl mx-auto">
-            <h1 className="text-3xl font-bold mb-8 text-white flex items-center gap-3">
-                <Users className="text-green-600" size={32} />
-                Quản lý Workspace
-            </h1>
+        <div className="p-8 max-w-[1400px] mx-auto min-h-screen">
+            <div className="mb-10">
+                <h1 className="text-4xl font-extrabold text-white flex items-center gap-4 mb-2">
+                    <Users className="text-[#2DD480]" size={36} />
+                    Workspaces
+                </h1>
+                <p className="text-[#8a9f91] text-lg ml-12">
+                    Collaborate, manage, and track progress with your teams.
+                </p>
+            </div>
 
             {error && (
-                <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-6 border border-red-200">
+                <div className="bg-red-500/10 text-red-500 p-4 rounded-2xl mb-8 border border-red-500/20 font-medium">
                     {error}
                 </div>
             )}
 
-            <form onSubmit={handleCreate} className="mb-8 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                <h2 className="text-lg font-semibold mb-4 text-gray-700">Tạo Workspace mới</h2>
-                <div className="flex gap-3">
-                    <input
-                        type="text"
-                        value={newWorkspaceName}
-                        onChange={(e) => setNewWorkspaceName(e.target.value)}
-                        placeholder="Nhập tên workspace..."
-                        className="flex-1 p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all"
-                        disabled={creating}
-                    />
-                    <button
-                        type="submit"
-                        disabled={creating || !newWorkspaceName.trim()}
-                        className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg transition-colors flex items-center gap-2 font-medium disabled:opacity-60 disabled:cursor-not-allowed"
+            {loading ? (
+                <div className="py-20 text-center flex flex-col items-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-[3px] border-t-transparent border-[#2DD480] mb-6"></div>
+                    <p className="text-[#8a9f91] font-medium text-lg animate-pulse">Loading your workspaces...</p>
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                    
+                    {/* Create New Workspace Card */}
+                    <div 
+                        className={`w-full max-w-md bg-[#1a261e]/40 rounded-3xl p-6 shadow-lg flex flex-col justify-center items-center border-[3px] border-dashed ${isCreatingUI ? 'border-[#283b2e]' : 'border-[#283b2e] hover:border-[#7bf192]/50 hover:bg-[#1a261e]/80 cursor-pointer'} transition-all group min-h-[260px]`}
+                        onClick={() => !isCreatingUI && setIsCreatingUI(true)}
                     >
-                        <Plus size={20} />
-                        {creating ? 'Đang tạo...' : 'Tạo mới'}
-                    </button>
-                </div>
-            </form>
-
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                <div className="p-6 border-b border-gray-100 bg-gray-50/50">
-                    <h2 className="text-lg font-semibold text-gray-800">Danh sách Workspace của bạn</h2>
-                </div>
-
-                {loading ? (
-                    <div className="p-12 text-center text-gray-500">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600 mx-auto mb-4"></div>
-                        Đang tải danh sách...
+                        {!isCreatingUI ? (
+                            <>
+                                <div className="w-16 h-16 rounded-full bg-[#283b2e] group-hover:bg-[#7bf192]/20 flex items-center justify-center text-[#7bf192] mb-5 transition-colors group-hover:scale-110 duration-300">
+                                    <Plus size={32} strokeWidth={3} />
+                                </div>
+                                <h3 className="text-[#8a9f91] group-hover:text-[#7bf192] font-bold text-xl transition-colors">
+                                    Create New Workspace
+                                </h3>
+                            </>
+                        ) : (
+                            <form 
+                                onSubmit={handleCreate} 
+                                className="w-full flex flex-col justify-center h-full animate-in fade-in zoom-in duration-200"
+                                onClick={(e) => e.stopPropagation()}
+                            >
+                                <h3 className="text-white font-bold mb-4 text-xl text-center">Name your workspace</h3>
+                                <input
+                                    autoFocus
+                                    type="text"
+                                    value={newWorkspaceName}
+                                    onChange={(e) => setNewWorkspaceName(e.target.value)}
+                                    placeholder="E.g. Marketing Team"
+                                    className="w-full p-4 bg-[#0d1511] text-white border-2 border-[#283b2e] rounded-2xl focus:outline-none focus:border-[#7bf192] mb-6 font-medium text-center text-lg placeholder:text-gray-600 transition-colors"
+                                    disabled={creating}
+                                />
+                                <div className="flex gap-3 w-full">
+                                    <button
+                                        type="button"
+                                        onClick={(e) => { 
+                                            e.stopPropagation(); 
+                                            setIsCreatingUI(false); 
+                                            setNewWorkspaceName(''); 
+                                            setError('');
+                                        }}
+                                        className="flex-1 py-3 rounded-2xl text-[#8a9f91] font-bold hover:bg-[#283b2e] hover:text-white transition-colors"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        disabled={creating || !newWorkspaceName.trim()}
+                                        className="flex-1 py-3 rounded-2xl bg-[#7bf192] text-[#1a261e] font-extrabold hover:bg-[#69db80] disabled:opacity-50 transition-colors shadow-[0_0_15px_rgba(45,212,128,0.2)]"
+                                    >
+                                        {creating ? 'Creating...' : 'Create'}
+                                    </button>
+                                </div>
+                            </form>
+                        )}
                     </div>
-                ) : workspaces.length === 0 ? (
-                    <div className="p-12 text-center text-gray-500 bg-gray-50/30">
-                        <Users className="mx-auto text-gray-300 mb-3" size={48} />
-                        Bạn chưa tham gia workspace nào.
-                    </div>
-                ) : (
-                    <ul className="divide-y divide-gray-100">
-                        {workspaces.map(ws => (
-                            <li key={ws._id} className="hover:bg-green-50/30 transition-colors group">
-                                <Link to={`/todoapp/workspace/${ws._id}`} className="p-6 block">
-                                    <div className="flex items-start justify-between">
-                                        <div>
-                                        <h3 className="font-bold text-xl text-gray-800 mb-2 group-hover:text-green-700 transition-colors">{ws.name}</h3>
-                                        <div className="flex items-center gap-2 text-sm text-gray-600 mb-1">
-                                            <Shield size={14} className="text-green-600" />
-                                            <span className="font-medium text-gray-700">Leader:</span>
-                                            {ws.leader?.name || 'Unknown'} ({ws.leader?.email || 'N/A'})
-                                        </div>
-                                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                                            <Users size={14} className="text-blue-500" />
-                                            <span className="font-medium text-gray-700">Thành viên:</span>
-                                            {ws.members?.length || 0} người
-                                        </div>
-                                    </div>
-                                        <div className="text-xs text-gray-400 bg-gray-100 px-3 py-1 rounded-full">
-                                            {new Date(ws.createdAt).toLocaleDateString('vi-VN')}
-                                        </div>
-                                    </div>
-                                </Link>
-                            </li>
-                        ))}
-                    </ul>
-                )}
-            </div>
+
+                    {/* Mapping existing workspaces */}
+                    {workspaces.map(ws => (
+                        <WorkspaceCard 
+                            key={ws._id}
+                            workspace={ws}
+                            onOpen={(id) => navigate(`/todoapp/workspace/${id}`)}
+                            category="WORKSPACE"
+                        />
+                    ))}
+                </div>
+            )}
         </div>
     );
 };

@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import type { Task } from '../../pages/main/TasksPage';
+import type { Task } from '../../interfaces/task';
 import { Calendar, CheckSquare, CheckCircle2, Edit } from 'lucide-react';
 export const TaskCard = ({
   task,
@@ -14,22 +14,20 @@ export const TaskCard = ({
     <div
       draggable
       onDragStart={(e) => onDragStart(e, task.id)}
-      className={`bg-[#18261F] p-4 rounded-2xl cursor-grab active:cursor-grabbing border ${
-        task.status === 'IN PROGRESS' && task.id === '3' 
-          ? 'border-[#2DD480]' 
-          : 'border-[#22352B]'
-      } hover:border-[#2DD480]/50 transition-colors shadow-sm`}
+      className={`bg-[#18261F] p-4 rounded-2xl cursor-grab active:cursor-grabbing border ${task.status === 'IN PROGRESS' && task.id === '3'
+        ? 'border-[#2DD480]'
+        : 'border-[#22352B]'
+        } hover:border-[#2DD480]/50 transition-colors shadow-sm`}
     >
       {/* Header Card: Priority & Date */}
       <div className="flex justify-between items-center mb-3">
         <span
-          className={`text-[10px] font-bold px-2 py-1 rounded-md ${
-            task.priority === 'HIGH PRIORITY'
-              ? 'bg-[#FF4D4D]/10 text-[#FF4D4D]'
-              : task.priority === 'MEDIUM PRIORITY'
+          className={`text-[10px] font-bold px-2 py-1 rounded-md ${task.priority === 'HIGH PRIORITY'
+            ? 'bg-[#FF4D4D]/10 text-[#FF4D4D]'
+            : task.priority === 'MEDIUM PRIORITY'
               ? 'bg-[#2DD480]/10 text-[#2DD480]'
               : 'bg-gray-500/10 text-gray-400'
-          }`}
+            }`}
         >
           {task.priority}
         </span>
@@ -46,7 +44,7 @@ export const TaskCard = ({
 
       {/* Tags */}
       <div className="flex gap-2 mb-4">
-        {task.tags.map((tag) => (
+        {task.tags.map((tag: any) => (
           <span key={tag} className="bg-[#22352B] text-[#A3B8AD] text-[10px] font-medium px-2 py-1 rounded-md">
             {tag}
           </span>
@@ -91,7 +89,7 @@ export const TaskCard = ({
 
         {/* edit button */}
         <button className="bg-[#2DD480] text-[#0D1511] px-5 py-2 rounded-full font-bold text-sm flex items-center gap-2 hover:bg-[#25b56d] transition-colors"
-        onClick={() => navigate(`/todoapp/tasks/${task.id}`)}>
+          onClick={() => navigate(`/todoapp/tasks/${task.id}`)}>
           <Edit size={16} /> Edit
         </button>
       </div>

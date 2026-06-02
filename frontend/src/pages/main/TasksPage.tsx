@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { CheckSquare, Filter } from 'lucide-react';
 import { KanbanBoard } from '../../components/task/KanbanBoard';
 import { CreateTaskModal } from '../../components/task/CreateTaskModal';
@@ -24,13 +24,13 @@ export default function TaskPage() {
               <p className="text-gray-400 text-sm">Manage your academic priorities and deadlines.</p>
             </div>
             <div className="flex gap-3">
-              <button 
+              <button
                 className="bg-[#18261F] text-white px-4 py-2 rounded-full 
                           font-semibold text-sm flex items-center 
                           gap-2 hover:bg-[#22352B] transition-colors">
                 <Filter size={16} /> Filter
               </button>
-              <button 
+              <button
                 className="bg-[#2DD480] text-[#0D1511] px-5 py-2 rounded-full 
                           font-bold text-sm flex items-center gap-2 hover:bg-[#25b56d] transition-colors"
                 onClick={() => setIsModalOpen(true)}>
@@ -40,17 +40,17 @@ export default function TaskPage() {
           </div>
         </div>
 
-        <CreateTaskModal 
-            isOpen={isModalOpen} 
-            onClose={() => setIsModalOpen(false)} 
-            onSuccess={fetchTasks} 
+        <CreateTaskModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onSuccess={fetchTasks}
         />
 
-        <KanbanBoard 
-            tasks={tasks} 
-            loading={loading} 
-            error={error} 
-            onUpdateTaskStatus={handleUpdateTaskStatus} 
+        <KanbanBoard
+          tasks={tasks}
+          loading={loading}
+          error={error}
+          onUpdateTaskStatus={handleUpdateTaskStatus}
         />
       </div>
     </div>
