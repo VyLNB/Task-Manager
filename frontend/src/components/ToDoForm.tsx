@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ConfirmDialog from './common/ConfirmDialog';
+import type { WorkspaceInterface } from '../interfaces/workspace';
 
 interface ToDoItemInterface {
   id?: string;
@@ -9,11 +10,14 @@ interface ToDoItemInterface {
   deadline: string;
   priority: string;
   tags: string[];
+  workspaceId?: string;
 }
 
 interface TaskDetailProps {
   initialData?: ToDoItemInterface | null;
   isEditMode?: boolean;
+  workspaces?: WorkspaceInterface[];
+  workspaceId?: string;
   onSubmit?: (formData: ToDoItemInterface) => void;
   onDelete?: (id: string) => void;
   onCancel?: () => void;
@@ -22,6 +26,8 @@ interface TaskDetailProps {
 const ToDoForm: React.FC<TaskDetailProps> = ({
   initialData,
   isEditMode = false,
+  workspaces = [],
+  workspaceId: initialWorkspaceId,
   onSubmit,
   onDelete,
   onCancel
@@ -31,9 +37,9 @@ const ToDoForm: React.FC<TaskDetailProps> = ({
   const [deadline, setDeadline] = useState('');
   const [priority, setPriority] = useState('');
   const [tags, setTags] = useState<string[]>([]);
+  const [workspaceId, setWorkspaceId] = useState<string>('');
   const [isCancelDialogOpen, setIsCancelDialogOpen] = useState(false);
   const navigate = useNavigate();
-
 
   // Load dữ liệu khi ở chế độ edit
   useEffect(() => {
@@ -43,6 +49,7 @@ const ToDoForm: React.FC<TaskDetailProps> = ({
       setDeadline(initialData.deadline || '');
       setPriority(initialData.priority || '');
       setTags(initialData.tags || []);
+      setWorkspaceId(initialData.workspaceId || initialWorkspaceId || '');
     } else {
       // Reset form khi ở chế độ thêm mới
       setTitle('');
@@ -50,8 +57,9 @@ const ToDoForm: React.FC<TaskDetailProps> = ({
       setDeadline('');
       setPriority('');
       setTags([]);
+      setWorkspaceId(initialWorkspaceId || '');
     }
-  }, [isEditMode, initialData]);
+  }, [isEditMode, initialData, initialWorkspaceId]);
 
 
 
@@ -63,7 +71,8 @@ const ToDoForm: React.FC<TaskDetailProps> = ({
       description,
       deadline,
       priority,
-      tags
+      tags,
+      workspaceId
     };
 
     if (onSubmit) {
@@ -100,6 +109,25 @@ const ToDoForm: React.FC<TaskDetailProps> = ({
           <h2 className="text-2xl font-bold text-white">
             {isEditMode ? 'Chỉnh sửa công việc' : 'Tạo công việc mới'}
           </h2>
+        </div>
+
+        {/* Workspace */}
+        <div>
+          <label className="block text-sm font-medium text-white mb-2">
+            Workspace
+          </label>
+          <select
+            value={workspaceId}
+            onChange={(e) => setWorkspaceId(e.target.value)}
+            disabled={!!initialWorkspaceId}
+            className="w-full px-3 py-2 border border-gray-600 rounded-md focus:outline-none 
+                        focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white bg-[#18261F] disabled:opacity-60"
+          >
+            <option value="">-- Công việc cá nhân --</option>
+            {workspaces.map(ws => (
+              <option key={ws._id} value={ws._id}>{ws.name}</option>
+            ))}
+          </select>
         </div>
 
         {/* Tiêu đề */}

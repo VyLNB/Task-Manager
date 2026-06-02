@@ -1,8 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ToDoForm from '../../components/ToDoForm';
 import { createTask } from '../../services/todo';
+import { getWorkspaces } from '../../services/workspace';
 import type { ToDoItemFormData } from '../../interfaces/todo';
+import type { WorkspaceInterface } from '../../interfaces/workspace';
 
 interface ToDoFormItem {
     id?: string;
@@ -11,11 +13,17 @@ interface ToDoFormItem {
     deadline: string;
     priority: string;
     tags: string[];
+    workspaceId?: string;
 }
 
 const AddTask = () => {
     const navigate = useNavigate();
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [workspaces, setWorkspaces] = useState<WorkspaceInterface[]>([]);
+
+    useEffect(() => {
+        getWorkspaces().then(res => setWorkspaces(res.data || [])).catch(console.error);
+    }, []);
 
     const handleSubmit = async (formData: ToDoFormItem) => {
         try {
@@ -25,6 +33,7 @@ const AddTask = () => {
                 title: formData.title,
                 description: formData.description,
                 status: 'TO DO', 
+                workspaceId: formData.workspaceId
             };
 
             console.log('Creating task:', payload);
@@ -57,6 +66,7 @@ const AddTask = () => {
                 isEditMode={false} 
                 onSubmit={handleSubmit}
                 onCancel={handleCancel}
+                workspaces={workspaces}
             />
         </div>
     );

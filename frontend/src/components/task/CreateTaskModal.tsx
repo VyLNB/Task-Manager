@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ToDoForm from '../ToDoForm';
 import { createTask } from '../../services/todo';
+import { getWorkspaces } from '../../services/workspace';
 import type { ToDoItemFormData } from '../../interfaces/todo';
+import type { WorkspaceInterface } from '../../interfaces/workspace';
 
 interface CreateTaskModalProps {
     isOpen: boolean;
@@ -12,6 +14,13 @@ interface CreateTaskModalProps {
 
 export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ isOpen, onClose, onSuccess, workspaceId }) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [workspaces, setWorkspaces] = useState<WorkspaceInterface[]>([]);
+
+    useEffect(() => {
+        if (isOpen && !workspaceId) {
+            getWorkspaces().then(res => setWorkspaces(res.data || [])).catch(console.error);
+        }
+    }, [isOpen, workspaceId]);
 
     if (!isOpen) return null;
 
@@ -22,7 +31,7 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ isOpen, onClos
                 title: formData.title,
                 description: formData.description,
                 status: 'TO DO',
-                workspaceId: workspaceId,
+                workspaceId: formData.workspaceId || workspaceId,
             };
             await createTask(payload);
             onSuccess();
@@ -48,6 +57,8 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ isOpen, onClos
                     isEditMode={false} 
                     onSubmit={handleSubmit}
                     onCancel={onClose}
+                    workspaces={workspaces}
+                    workspaceId={workspaceId}
                 />
             </div>
         </div>

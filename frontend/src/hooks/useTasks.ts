@@ -21,13 +21,22 @@ export function useTasks(workspaceId?: string) {
                    currentStatus = item.completed ? 'COMPLETED' : 'TO DO';
                 }
 
+                let tagName = 'CÁ NHÂN';
+                if (item.workspaceId) {
+                    if (typeof item.workspaceId === 'object' && item.workspaceId.name) {
+                        tagName = item.workspaceId.name.toUpperCase();
+                    } else {
+                        tagName = 'WORKSPACE';
+                    }
+                }
+
                 return {
                     id: item._id,
                     title: item.title,
                     status: currentStatus, 
                     priority: 'MEDIUM PRIORITY', 
                     date: formattedDate,
-                    tags: workspaceId ? ['WORKSPACE TASK'] : ['API TASK'], 
+                    tags: [tagName], 
                     completedSubtasks: currentStatus === 'COMPLETED' ? 1 : 0,
                     totalSubtasks: 1,
                 };
