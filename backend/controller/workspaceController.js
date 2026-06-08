@@ -1,4 +1,5 @@
 import { WorkspaceModel } from "../model/WorkspaceModel.js";
+import UserModel from "../model/UserModel.js";
 
 export const createWorkspace = async (req, res) => {
     try {
@@ -42,8 +43,8 @@ export const getWorkspace = async (req, res) => {
                 { members: userId }
             ]
         })
-            .populate("leader", "name email")
-            .populate("members", "name email")
+            .populate("leader", "fullName email")
+            .populate("members", "fullName email")
             .sort({ createdAt: -1 })
 
         res.status(200).json({
@@ -54,6 +55,64 @@ export const getWorkspace = async (req, res) => {
         res.status(500).json({
             message: "Error getting workspaces",
             error: err.message
+        });
+    }
+}
+
+export const inviteMember = async (req, res) => {
+    try {
+        const { workspaceId } = req.params;
+        const { email } = req.body;
+        const currentUserId = req.userId;
+
+        //kiểm tra workspace
+        const workspace = await WorkspaceModel.findById(workspaceId);
+        if (!workspace){
+            return res.status(404).json({
+                message: 'Not found workspace'
+            });
+        }
+
+        //kiểm tra leader
+        if (workspace.leader.toString() !== currentUserId){
+            return res.status(403).json({
+                message: 'You are not authorized to invite members to this workspace'
+            });
+        }
+
+        //tìm user theo email
+        const userToInvite = await UserModel.findOne({email});
+        if (!userToInvite){
+            return res.status(404).json({
+                message:'User not found'
+            });
+        }
+        
+        //kiểm tra đã là member chưa
+        const alreadyMemeber = workspace.members.some(
+            member => member.toString() === userToInvite._id.toString()
+        );
+
+        if (alreadyMemeber){
+            return res.status(400).json({
+                message:'User is already a member of this workspace'
+            });
+        }
+        workspace.members.push(userToInvite._id);  
+        await workspace.save();
+        
+        return res.status(200).json({
+            message: 'Invite memeber successfully',
+            member: {
+                _id: userToInvite._id,
+                fullName: userToInvite.fullName,
+                email: userToInvite.email
+            }
+        });
+    } catch (error) {
+        return res.status(500).json({
+            message: 'Error inviting member',
+            error: error.message
         });
     }
 }

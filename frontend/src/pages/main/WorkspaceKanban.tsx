@@ -1,16 +1,17 @@
-import React, { useState } from 'react';
-import { CheckSquare, Filter } from 'lucide-react';
+import { useState } from 'react';
+import { CheckSquare, User } from 'lucide-react';
 import { KanbanBoard } from '../../components/task/KanbanBoard';
 import { CreateTaskModal } from '../../components/task/CreateTaskModal';
+import { InviteMemberModal } from '../../components/workspace/InviteMemberModal';
 import { useTasks } from '../../hooks/useTasks';
 import { useParams } from 'react-router-dom';
+import { inviteMember } from '../../services/workspace';
 
 export default function WorkspaceKanban() {
   const { id: workspaceId } = useParams<{ id: string }>();
   const { tasks, loading, error, fetchTasks, handleUpdateTaskStatus } = useTasks(workspaceId);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-[#0D1511] font-sans p-8">
@@ -27,10 +28,11 @@ export default function WorkspaceKanban() {
             </div>
             <div className="flex gap-3">
               <button 
+                onClick={() => setIsInviteModalOpen(true)}
                 className="bg-[#18261F] text-white px-4 py-2 rounded-full 
                           font-semibold text-sm flex items-center 
                           gap-2 hover:bg-[#22352B] transition-colors">
-                <Filter size={16} /> Filter
+                <User size={16} /> Invite Member
               </button>
               <button 
                 className="bg-[#2DD480] text-[#0D1511] px-5 py-2 rounded-full 
@@ -47,6 +49,17 @@ export default function WorkspaceKanban() {
             onClose={() => setIsModalOpen(false)} 
             onSuccess={fetchTasks} 
             workspaceId={workspaceId}
+        />
+
+        <InviteMemberModal
+            isOpen={isInviteModalOpen}
+            onClose={() => setIsInviteModalOpen(false)}
+            onInvite={async (email) => {
+                if (!workspaceId) return;
+                await inviteMember(workspaceId, email);
+                // Bạn có thể reload data ở đây nếu cần, ví dụ: gọi lại API getWorkspace
+                alert('Mời thành viên thành công!');
+            }}
         />
 
         <KanbanBoard 

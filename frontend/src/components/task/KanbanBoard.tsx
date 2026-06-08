@@ -22,19 +22,22 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ tasks, loading, error,
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <KanbanColumn
-                    title="TO DO"
+                    status="TO DO"
+                    title="CẦN LÀM"
                     tasks={tasks.filter((t) => t.status === 'TO DO')}
                     onDragStart={handleDragStart}
                     onDrop={onUpdateTaskStatus} 
                 />
                 <KanbanColumn
-                    title="IN PROGRESS"
+                    status="IN PROGRESS"
+                    title="ĐANG LÀM"
                     tasks={tasks.filter((t) => t.status === 'IN PROGRESS')}
                     onDragStart={handleDragStart}
                     onDrop={onUpdateTaskStatus}
                 />
                 <KanbanColumn
-                    title="COMPLETED"
+                    status="COMPLETED"
+                    title="HOÀN THÀNH"
                     tasks={tasks.filter((t) => t.status === 'COMPLETED')}
                     onDragStart={handleDragStart}
                     onDrop={onUpdateTaskStatus}

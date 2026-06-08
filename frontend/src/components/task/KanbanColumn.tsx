@@ -1,16 +1,18 @@
-import type { Task, Status} from '../../pages/main/TasksPage';
 import { TaskCard } from './TaskCard';
 import { useState } from 'react';
 import { MoreHorizontal, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import type { Task, Status } from '../../interfaces/task';
 
 export const KanbanColumn = ({
+  status,
   title,
   tasks,
   onDrop,
   onDragStart,
 }: {
-  title: Status;
+  status: Status;
+  title: string;
   tasks: Task[];
   onDrop: (status: Status, taskId: string) => void;
   onDragStart: (e: React.DragEvent, id: string) => void;
@@ -33,13 +35,13 @@ export const KanbanColumn = ({
     setIsOver(false);
     const taskId = e.dataTransfer.getData('text/plain');
     if (taskId) {
-      onDrop(title, taskId);
+      onDrop(status, taskId);
     }
   };
 
-  const isToDo = title === 'TO DO';
-  const isInProgress = title === 'IN PROGRESS';
-  const isCompleted = title === 'COMPLETED';
+  const isToDo = status === 'TO DO';
+  const isInProgress = status === 'IN PROGRESS';
+  const isCompleted = status === 'COMPLETED';
 
   return (
     <div
@@ -81,7 +83,7 @@ export const KanbanColumn = ({
           rounded-2xl hover:bg-[#18261F] hover:text-white transition-colors flex items-center justify-center gap-2 font-medium text-sm"
           onClick={() => navigate('/todoapp/newTask')}
         >
-          <Plus size={18} /> Add Task
+          <Plus size={18} /> Thêm công việc mới
         </button>
       )}
     </div>

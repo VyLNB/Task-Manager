@@ -1,37 +1,29 @@
 import React from 'react';
 import type { WorkspaceInterface, UserInterface } from '../../interfaces/workspace';
 
-// 2. Định nghĩa Props cho Component
 interface WorkspaceCardProps {
     workspace: WorkspaceInterface;
-    // Các trường UI cần nhưng chưa có trong Backend Interface
-    description?: string;
     category?: string;
+    leader: UserInterface;
     activeTasks?: number;
     onOpen?: (workspaceId: string) => void;
 }
 
 export const WorkspaceCard: React.FC<WorkspaceCardProps> = ({
     workspace,
-    description = 'No description provided for this workspace...',
-    category = 'ADMINISTRATIVE',
+    category,
+    leader,
     activeTasks = 0,
     onOpen,
 }) => {
-    // --- XỬ LÝ LOGIC DỮ LIỆU ---
-
-    // Gộp leader và members thành một mảng duy nhất. 
-    // (Dùng Map để lọc trùng lặp đề phòng trường hợp leader cũng nằm trong mảng members)
     const allUsersMap = new Map<string, UserInterface>();
     allUsersMap.set(workspace.leader._id, workspace.leader);
     workspace.members.forEach(member => allUsersMap.set(member._id, member));
 
     const allUniqueUsers = Array.from(allUsersMap.values());
 
-    // Lấy tối đa 2 người đầu tiên để hiển thị avatar
     const displayUsers = allUniqueUsers.slice(0, 2);
 
-    // Tính số lượng người còn lại để hiển thị cục +X
     const extraMembersCount = allUniqueUsers.length > 2 ? allUniqueUsers.length - 2 : 0;
 
     return (
@@ -66,7 +58,7 @@ export const WorkspaceCard: React.FC<WorkspaceCardProps> = ({
                     {workspace.name}
                 </h2>
                 <p className="text-[#8a9f91] text-sm leading-relaxed pr-4 line-clamp-2">
-                    {description}
+                    Leader: {leader.fullName}
                 </p>
             </div>
 
@@ -79,9 +71,9 @@ export const WorkspaceCard: React.FC<WorkspaceCardProps> = ({
                         <img
                             key={user._id}
                             // Dùng API tạo avatar từ tên vì interface User chưa có thuộc tính avatar/image
-                            src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=283b2e&color=7bf192&bold=true`}
-                            alt={user.name}
-                            title={user.name} // Hover vào ảnh sẽ hiện tên
+                            src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user.fullName)}&background=283b2e&color=7bf192&bold=true`}
+                            alt={user.fullName}
+                            title={user.fullName} // Hover vào ảnh sẽ hiện tên
                             className="w-11 h-11 rounded-full border-[3px] border-[#1a261e] object-cover"
                         />
                     ))}
@@ -97,20 +89,11 @@ export const WorkspaceCard: React.FC<WorkspaceCardProps> = ({
 
                 {/* Active Tasks & Button */}
                 <div className="flex items-center gap-5">
-                    <div className="flex flex-col items-end">
-                        <span className="text-[#8a9f91] text-[10px] font-black uppercase tracking-widest">
-                            Active Tasks
-                        </span>
-                        <span className="text-[#7bf192] text-2xl font-extrabold leading-tight">
-                            {activeTasks}
-                        </span>
-                    </div>
-
                     <button
                         onClick={() => onOpen && onOpen(workspace._id)}
                         className="bg-[#7bf192] text-[#1a261e] px-6 py-2.5 rounded-full font-bold text-sm hover:bg-[#69db80] transition-colors focus:outline-none focus:ring-2 focus:ring-[#7bf192] focus:ring-offset-2 focus:ring-offset-[#1a261e]"
                     >
-                        Open
+                        Mở
                     </button>
                 </div>
             </div>

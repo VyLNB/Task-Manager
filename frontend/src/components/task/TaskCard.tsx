@@ -77,7 +77,7 @@ export const TaskCard = ({
         <div className={`flex items-center text-xs font-semibold ${isCompleted ? 'text-[#2DD480]' : 'text-gray-400'}`}>
           {isCompleted ? (
             <span className="bg-[#2DD480]/10 px-2 py-1 rounded-md flex items-center">
-              <CheckCircle2 size={12} className="mr-1" /> All Done
+              <CheckCircle2 size={12} className="mr-1" /> Hoàn thành
             </span>
           ) : (
             <>
@@ -90,7 +90,7 @@ export const TaskCard = ({
         {/* edit button */}
         <button className="bg-[#2DD480] text-[#0D1511] px-5 py-2 rounded-full font-bold text-sm flex items-center gap-2 hover:bg-[#25b56d] transition-colors"
           onClick={() => navigate(`/todoapp/tasks/${task.id}`)}>
-          <Edit size={16} /> Edit
+          <Edit size={16} /> Chỉnh sửa
         </button>
       </div>
     </div>

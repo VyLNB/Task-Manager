@@ -8,3 +8,10 @@ export async function createWorkspace(name: string): Promise<WorkspaceInterface>
 export async function getWorkspaces(): Promise<{ message: string, data: WorkspaceInterface[] }> {
     return apiRequest<{ message: string, data: WorkspaceInterface[] }>("get", "/workspaces/");
 }
+
+export async function inviteMember(
+    workspaceId: string,
+    email: string
+) {
+    return apiRequest("post", `/workspaces/${workspaceId}/invite`, { email });
+}

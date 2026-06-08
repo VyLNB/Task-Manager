@@ -3,8 +3,7 @@ import type { WorkspaceInterface } from '../../interfaces/workspace';
 import { getWorkspaces, createWorkspace } from '../../services/workspace';
 import { Users, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { WorkspaceCard } from '../../components/workspace/WorkSpaceCard';
-
+import { WorkspaceCard } from '../../components/workspace/WorkspaceCard';
 const WorkspacePage = () => {
     const navigate = useNavigate();
     const [workspaces, setWorkspaces] = useState<WorkspaceInterface[]>([]);
@@ -14,6 +13,7 @@ const WorkspacePage = () => {
     const [isCreatingUI, setIsCreatingUI] = useState(false);
     const [error, setError] = useState('');
 
+    //lấy tất cả workspace
     const fetchWorkspaces = async () => {
         try {
             setLoading(true);
@@ -56,7 +56,7 @@ const WorkspacePage = () => {
                     Workspaces
                 </h1>
                 <p className="text-[#8a9f91] text-lg ml-12">
-                    Collaborate, manage, and track progress with your teams.
+                    Nơi bạn có thể làm việc nhóm hiệu quả hơn
                 </p>
             </div>
 
@@ -73,9 +73,9 @@ const WorkspacePage = () => {
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-                    
+
                     {/* Create New Workspace Card */}
-                    <div 
+                    <div
                         className={`w-full max-w-md bg-[#1a261e]/40 rounded-3xl p-6 shadow-lg flex flex-col justify-center items-center border-[3px] border-dashed ${isCreatingUI ? 'border-[#283b2e]' : 'border-[#283b2e] hover:border-[#7bf192]/50 hover:bg-[#1a261e]/80 cursor-pointer'} transition-all group min-h-[260px]`}
                         onClick={() => !isCreatingUI && setIsCreatingUI(true)}
                     >
@@ -85,12 +85,12 @@ const WorkspacePage = () => {
                                     <Plus size={32} strokeWidth={3} />
                                 </div>
                                 <h3 className="text-[#8a9f91] group-hover:text-[#7bf192] font-bold text-xl transition-colors">
-                                    Create New Workspace
+                                    Tạo workspace mới
                                 </h3>
                             </>
                         ) : (
-                            <form 
-                                onSubmit={handleCreate} 
+                            <form
+                                onSubmit={handleCreate}
                                 className="w-full flex flex-col justify-center h-full animate-in fade-in zoom-in duration-200"
                                 onClick={(e) => e.stopPropagation()}
                             >
@@ -107,22 +107,22 @@ const WorkspacePage = () => {
                                 <div className="flex gap-3 w-full">
                                     <button
                                         type="button"
-                                        onClick={(e) => { 
-                                            e.stopPropagation(); 
-                                            setIsCreatingUI(false); 
-                                            setNewWorkspaceName(''); 
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setIsCreatingUI(false);
+                                            setNewWorkspaceName('');
                                             setError('');
                                         }}
                                         className="flex-1 py-3 rounded-2xl text-[#8a9f91] font-bold hover:bg-[#283b2e] hover:text-white transition-colors"
                                     >
-                                        Cancel
+                                        Hủy
                                     </button>
                                     <button
                                         type="submit"
                                         disabled={creating || !newWorkspaceName.trim()}
                                         className="flex-1 py-3 rounded-2xl bg-[#7bf192] text-[#1a261e] font-extrabold hover:bg-[#69db80] disabled:opacity-50 transition-colors shadow-[0_0_15px_rgba(45,212,128,0.2)]"
                                     >
-                                        {creating ? 'Creating...' : 'Create'}
+                                        {creating ? 'Đang tạo...' : 'Tạo'}
                                     </button>
                                 </div>
                             </form>
@@ -131,9 +131,10 @@ const WorkspacePage = () => {
 
                     {/* Mapping existing workspaces */}
                     {workspaces.map(ws => (
-                        <WorkspaceCard 
+                        <WorkspaceCard
                             key={ws._id}
                             workspace={ws}
+                            leader={ws.leader}
                             onOpen={(id) => navigate(`/todoapp/workspace/${id}`)}
                             category="WORKSPACE"
                         />
