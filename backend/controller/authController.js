@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 import env from '../config/environment.js';
 import bcrypt from 'bcryptjs';
 import User from '../model/UserModel.js';
+import RoleModel from '../model/RoleModel.js';
 
 const generateTokens = (userId) => {
     const accessToken = jwt.sign(
@@ -45,11 +46,19 @@ export const register = async (req, res) => {
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        // Tạo user mới với mật khẩu đã mã hóa
+        // Find the default Member role
+        let memberRole = await RoleModel.findOne({ name: 'Member' });
+        if (!memberRole) {
+            // Fallback just in case
+            memberRole = await RoleModel.create({ name: 'Member', permissions: ['VIEW_TASK', 'UPDATE_TASK'] });
+        }
+
+        // Tạo user mới với mật khẩu đã mã hóa và role mặc định
         const newUser = new User({
             email,
             password: hashedPassword,
             fullName,
+            roleId: memberRole._id
         });
 
         // Lưu vào cơ sở dữ liệu
@@ -62,6 +71,10 @@ export const register = async (req, res) => {
                 id: newUser._id,
                 email: newUser.email,
                 fullName: newUser.fullName,
+                role: {
+                    name: memberRole.name,
+                    permissions: memberRole.permissions
+                }
             },
             timestamp: new Date().toISOString()
         });
@@ -87,7 +100,7 @@ export const login = async (req, res) => {
         };
 
         // Tìm user theo email
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email }).populate('roleId');
         const isMatch = user ? await bcrypt.compare(password, user.password) : false;
 
         if (!user || !isMatch) {
@@ -113,6 +126,11 @@ export const login = async (req, res) => {
             id: user._id,
             email: user.email,
             fullName: user.fullName,
+            role: user.roleId ? {
+                id: user.roleId._id,
+                name: user.roleId.name,
+                permissions: user.roleId.permissions
+            } : null
         };
 
         return res.status(200).json({
@@ -125,6 +143,34 @@ export const login = async (req, res) => {
         });
     } catch (error) {
         console.error('Login error:', error);
+        return res.status(500).json({
+            message: 'Lỗi server. Vui lòng thử lại sau.',
+            timestamp: new Date().toISOString()
+        });
+    }
+};
+
+export const logout = async (req, res) => {
+    try {
+        const refreshToken = req.cookies.refreshToken;
+        if (refreshToken) {
+            // Xóa refresh token trong database
+            await User.findOneAndUpdate({ refreshToken }, { refreshToken: null });
+        }
+        
+        // Xóa cookie
+        res.clearCookie('refreshToken', {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict'
+        });
+
+        return res.status(200).json({
+            message: 'Đăng xuất thành công.',
+            timestamp: new Date().toISOString()
+        });
+    } catch (error) {
+        console.error('Logout error:', error);
         return res.status(500).json({
             message: 'Lỗi server. Vui lòng thử lại sau.',
             timestamp: new Date().toISOString()

@@ -20,8 +20,10 @@ const LoginPage: React.FC = () => {
 
     try {
       const response = await signin({ email, password });
-      console.log("Login response:", response);
-      navigate('/todoapp/dashboard'); 
+      if (response.data) {
+        localStorage.setItem('user', JSON.stringify(response.data));
+      }
+      navigate('/todoapp/dashboard');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Đăng nhập thất bại');
     } finally {
@@ -29,17 +31,41 @@ const LoginPage: React.FC = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64 text-white">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mr-2"></div>
+        <p>Đang tải dữ liệu...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-red-400 text-center p-8 border border-red-500/30 bg-red-500/10 rounded-xl m-4">
+        <p className="mb-4">{error}</p>
+        <button
+          onClick={() => navigate("/todoapp/tasks")}
+          className="px-4 py-2 bg-red-500/20 text-red-500 border border-red-500/50 rounded-xl hover:bg-red-500/30 font-medium transition-colors"
+        >
+          Quay lại danh sách
+        </button>
+      </div>
+    );
+  }
+
+
   return (
-    <div className="min-h-screen bg-green-950 flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen bg-[#0f1f1b] flex items-center justify-center p-4 relative overflow-hidden">
 
       {/* Login Card */}
-      <div className="relative z-10 bg-green-800/40 backdrop-blur-xl rounded-3xl shadow-2xl p-4 w-full max-w-sm border border-blue-400/20">
+      <div className="relative z-10 bg-[#1a2f2a]/60 backdrop-blur-xl rounded-3xl shadow-2xl p-4 w-full max-w-sm border border-teal-800/50">
         {/* Logo */}
         <div className="flex justify-center mb-8">
-          <div className="bg-white/90 rounded-2xl p-4 shadow-lg">
-            <svg width="60" height="60" viewBox="0 0 100 100" className="text-blue-600">
-              <path d="M20,40 Q30,20 40,40 T60,40" stroke="currentColor" strokeWidth="12" fill="none" strokeLinecap="round"/>
-              <path d="M20,60 Q30,40 40,60 T60,60" stroke="currentColor" strokeWidth="12" fill="none" strokeLinecap="round"/>
+          <div className="bg-[#0f1f1b] rounded-2xl p-4 shadow-[0_0_15px_rgba(20,184,166,0.2)] border border-teal-800/50">
+            <svg width="60" height="60" viewBox="0 0 100 100" className="text-teal-400">
+              <path d="M20,40 Q30,20 40,40 T60,40" stroke="currentColor" strokeWidth="12" fill="none" strokeLinecap="round" />
+              <path d="M20,60 Q30,40 40,60 T60,60" stroke="currentColor" strokeWidth="12" fill="none" strokeLinecap="round" />
             </svg>
           </div>
         </div>
@@ -55,13 +81,13 @@ const LoginPage: React.FC = () => {
             placeholder='email@gmail.com'
             onChange={(e) => setEmail(e.target.value)}
           />
-          
+
           <InputField
-          label="Mật khẩu"
-          type="password"
-          value={password}
-          placeholder='Password'
-          onChange={(e) => setPassword(e.target.value)}
+            label="Mật khẩu"
+            type="password"
+            value={password}
+            placeholder='Password'
+            onChange={(e) => setPassword(e.target.value)}
           />
 
           {/* Forgot Password */}
@@ -74,7 +100,7 @@ const LoginPage: React.FC = () => {
           {/* Sign In Button */}
           <button
             onClick={handleSubmit}
-            className="w-full bg-[#2DD480] hover:bg-[#25b56d] text-[#0D1511] font-bold py-3 rounded-lg transition shadow-lg"
+            className="w-full bg-teal-500 hover:bg-teal-400 text-[#0f1f1b] font-bold py-3 rounded-lg transition shadow-[0_0_15px_rgba(20,184,166,0.3)] hover:shadow-[0_0_20px_rgba(20,184,166,0.5)]"
           >
             Đăng nhập
           </button>
@@ -89,7 +115,7 @@ const LoginPage: React.FC = () => {
         {/* Register Link */}
         <p className="text-center text-white/70 text-sm">
           Chưa có tài khoản?{' '}
-          <button className="text-[#2DD480] font-semibold hover:underline" onClick={() => {navigate("/register")}}>
+          <button className="text-teal-400 font-semibold hover:underline" onClick={() => { navigate("/register") }}>
             Đăng ký ngay
           </button>
         </p>

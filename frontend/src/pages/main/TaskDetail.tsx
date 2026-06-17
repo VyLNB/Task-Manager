@@ -1,5 +1,5 @@
 // pages/TaskDetail.tsx
-import ToDoForm from "../../components/ToDoForm";
+import ToDoForm from "../../components/TaskForm";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getAllToDo, updateTask } from "../../services/todo";
@@ -7,21 +7,22 @@ import type { ToDoItemInterface } from "../../interfaces/todo";
 
 // Interface nội bộ để match với props của ToDoForm
 interface FormDataType {
-  id?: string;
-  title: string;
-  description: string;
-  deadline: string;
-  priority: string;
-  tags: string[];
+    id?: string;
+    title: string;
+    description: string;
+    deadline: string;
+    priority: string;
+    tags: string[];
+    workspaceId?: string;
 }
 
 const TaskDetail = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
-    
+
     const [taskData, setTaskData] = useState<FormDataType | null>(null);
     const [loading, setLoading] = useState(true);
-    const [isSubmitting, setIsSubmitting] = useState(false); // Thêm trạng thái đang lưu
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
@@ -34,30 +35,26 @@ const TaskDetail = () => {
 
             try {
                 setLoading(true);
-                // Cách 1: Nếu backend có API getById thì dùng cái này sẽ tối ưu hơn
-                // const task = await getToDoById(id);
-                
-                // Cách 2: Dùng getAll như code cũ của bạn
+
                 const allTodos = await getAllToDo();
                 const task = allTodos.find((item: ToDoItemInterface) => item._id === id);
-                
+
                 if (!task) {
                     setError('Không tìm thấy công việc');
                     setLoading(false);
                     return;
                 }
-                
-                // Format dữ liệu từ API (_id) sang Form (id)
+
                 const formattedData: FormDataType = {
-                    id: task._id, // Quan trọng: map _id sang id
+                    id: task._id,
                     title: task.title,
                     description: task.description || '',
-                    // Các trường dưới API không có, set mặc định để Form không lỗi
-                    deadline: '',     
-                    priority: '',     
-                    tags: []          
+                    deadline: (task as any).dueDate ? new Date((task as any).dueDate).toISOString().split('T')[0] : '',
+                    priority: (task as any).priority || 'MEDIUM',
+                    tags: (task as any).tags || [],
+                    workspaceId: (task as any).workspaceId || ''
                 };
-                
+
                 setTaskData(formattedData);
                 setError(null);
             } catch (err) {
@@ -76,15 +73,18 @@ const TaskDetail = () => {
         if (!id) return;
 
         try {
-            setIsSubmitting(true); // Bắt đầu loading
+            setIsSubmitting(true);
             console.log('Updating task payload:', formData);
-            
-            // Gọi API update - chỉ gửi title và description theo đúng Interface
-            await updateTask(id, { 
-                title: formData.title, 
-                description: formData.description 
-            });
-            
+
+            await updateTask(id, {
+                title: formData.title,
+                description: formData.description,
+                priority: formData.priority,
+                dueDate: formData.deadline,
+                tags: formData.tags,
+                workspaceId: formData.workspaceId
+            } as any);
+
             // Thành công thì quay về trang danh sách
             navigate("/todoapp/tasks");
         } catch (err) {
@@ -96,7 +96,6 @@ const TaskDetail = () => {
     };
 
     const handleDelete = async (taskId: string) => {
-        // Logic delete (để sau)
         console.log("Delete requested for:", taskId);
     };
 
@@ -111,11 +110,11 @@ const TaskDetail = () => {
 
     if (error) {
         return (
-            <div className="text-red-300 text-center p-8 border border-red-300 rounded m-4">
+            <div className="text-red-400 text-center p-8 border border-red-500/30 bg-red-500/10 rounded-xl m-4">
                 <p className="mb-4">{error}</p>
-                <button 
+                <button
                     onClick={() => navigate("/todoapp/tasks")}
-                    className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                    className="px-4 py-2 bg-red-500/20 text-red-500 border border-red-500/50 rounded-xl hover:bg-red-500/30 font-medium transition-colors"
                 >
                     Quay lại danh sách
                 </button>
@@ -127,15 +126,14 @@ const TaskDetail = () => {
         <div className="text-white">
             {taskData && (
                 <div className="relative">
-                    {/* Hiển thị lớp phủ khi đang submit để chặn thao tác */}
                     {isSubmitting && (
                         <div className="absolute inset-0 bg-black/50 z-10 flex items-center justify-center rounded-lg">
                             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
                         </div>
                     )}
-                    
-                    <ToDoForm 
-                        isEditMode={true} 
+
+                    <ToDoForm
+                        isEditMode={true}
                         initialData={taskData}
                         onSubmit={handleSubmit}
                         onDelete={handleDelete}

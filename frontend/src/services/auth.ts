@@ -77,10 +77,15 @@ export async function signup(
 }
 
 export async function signout(): Promise<void> {
-  await apiRequest<void>("post", "/auth/logout", {});
-  
-  // Xóa token khỏi localStorage
-  localStorage.removeItem("token");
+  try {
+    await apiRequest<void>("post", "/auth/logout", {});
+  } catch (error) {
+    console.error("Logout API failed", error);
+  } finally {
+    // Xóa token khỏi localStorage
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+  }
 }
 
 export async function getProfile(): Promise<UserProfileResponse> {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import ToDoForm from '../ToDoForm';
+import ToDoForm from '../TaskForm';
 import { createTask } from '../../services/todo';
 import { getWorkspaces } from '../../services/workspace';
 import type { ToDoItemFormData } from '../../interfaces/todo';
@@ -46,15 +46,15 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ isOpen, onClos
 
     return (
         <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
-            <div className="bg-[#18261F] rounded-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto relative shadow-2xl border border-gray-700">
+            <div className="bg-[#1a2f2a] rounded-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto relative shadow-2xl border border-teal-800">
                 {isSubmitting && (
                     <div className="absolute inset-0 bg-black/50 z-10 flex items-center justify-center rounded-xl">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#2DD480]"></div>
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-500"></div>
                     </div>
                 )}
-                
-                <ToDoForm 
-                    isEditMode={false} 
+
+                <ToDoForm
+                    isEditMode={false}
                     onSubmit={handleSubmit}
                     onCancel={onClose}
                     workspaces={workspaces}

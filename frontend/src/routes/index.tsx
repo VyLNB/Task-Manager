@@ -9,6 +9,7 @@ import RegisterPage from "../pages/auth/RegisterPage";
 import Calendar from "../pages/main/Calendar";
 import WorkspacePage from "../pages/main/WorkspacePage";
 import WorkspaceKanban from "../pages/main/WorkspaceKanban";
+import PersonnelPage from "../pages/main/PersonnelPage";
 
 
 const router = createBrowserRouter([
@@ -54,6 +55,10 @@ const router = createBrowserRouter([
             {
                 path: "workspace/:id",
                 element: <WorkspaceKanban/>
+            },
+            {
+                path: "personnel",
+                element: <PersonnelPage/>
             }
         ]
     }

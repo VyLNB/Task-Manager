@@ -18,6 +18,11 @@ const UserSchema = new mongoose.Schema(
         refreshToken: {
             type: String,
             default: null
+        },
+        roleId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Roles',
+            required: false // Optional in DB, handled by logic
         }
     },
     { timestamps: true }

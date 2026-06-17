@@ -1,5 +1,5 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
     List,
     ChevronDown,
@@ -10,8 +10,12 @@ import {
     Calendar,
     UserCircle,
     LayersPlus,
-    Users
+    Users,
+    Shield,
+    LogOut
 } from "lucide-react";
+
+import { signout } from "../../services/auth";
 
 
 interface MenuItem {
@@ -22,6 +26,7 @@ interface MenuItem {
         id: string;
         label: string;
     }[];
+    path?: string;
 }
 
 interface SidebarProps {
@@ -32,6 +37,12 @@ interface SidebarProps {
 const SideBar: React.FC<SidebarProps> = ({ isMobileOpen, setIsMobileOpen }) => {
     const [isCollapsed, setIsCollapsed] = React.useState(false);
     const [openDropdownId, setOpenDropdownId] = React.useState<string | null>(null);
+    const navigate = useNavigate();
+
+    const handleLogout = async () => {
+        await signout();
+        navigate('/');
+    };
 
     const menuItems: MenuItem[] = [
         {
@@ -59,15 +70,32 @@ const SideBar: React.FC<SidebarProps> = ({ isMobileOpen, setIsMobileOpen }) => {
             label: "Workspace",
             icon: <Users size={20} />
         }
-    ]
+    ];
+
+    const userStr = localStorage.getItem("user");
+    const parsedUser = userStr ? JSON.parse(userStr) : null;
+    const userData = parsedUser?.user || parsedUser;
+    const isAdmin = userData?.role?.name === 'Admin' || userData?.role?.permissions?.includes('ALL');
+    
+    console.log("DEBUG SIDEBAR:", { parsedUser, userData, isAdmin });
 
     const otherItems: MenuItem[] = [
         {
             id: "me",
             label: "Tài khoản",
             icon: <UserCircle size={20} />,
+            path: "/todoapp/me"
         },
     ];
+
+    if (isAdmin) {
+        menuItems.push({
+            id: "personnel",
+            label: "Quản lý nhân sự",
+            icon: <Shield size={20} />,
+            path: "/todoapp/personnel"
+        });
+    }
 
     const handleDropdownToggle = (id: string) => {
         if (isCollapsed) {
@@ -114,14 +142,14 @@ const SideBar: React.FC<SidebarProps> = ({ isMobileOpen, setIsMobileOpen }) => {
                 )}
                 {isCollapsed && (
                     <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center flex-shrink-0">
-                        <GraduationCap color="green" />
+                        <GraduationCap color="teal" />
                     </div>
                 )}
 
                 {/* Desktop Collapse Button */}
                 <button
                     onClick={toggleCollapse}
-                    className="hidden lg:flex p-1.5 rounded-md hover:bg-green-600 transition-colors absolute -right-3 top-5 bg-green-500 border border-white shadow-sm"
+                    className="hidden lg:flex p-1.5 rounded-md hover:bg-teal-800 transition-colors absolute -right-3 top-5 bg-teal-600 border border-white shadow-sm"
                     title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
                 >
                     {isCollapsed ? (
@@ -145,7 +173,7 @@ const SideBar: React.FC<SidebarProps> = ({ isMobileOpen, setIsMobileOpen }) => {
                                         className={`w-full flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200
                                 ${openDropdownId === item.id
                                                 ? "bg-teal-600"
-                                                : "hover:bg-green-700"
+                                                : "hover:bg-teal-800/50"
                                             }
                                 ${isCollapsed ? "justify-center" : "justify-between"}
                             `}
@@ -180,7 +208,7 @@ const SideBar: React.FC<SidebarProps> = ({ isMobileOpen, setIsMobileOpen }) => {
                                             : "max-h-0 opacity-0"
                                             }`}
                                     >
-                                        <div className="bg-teal-600/30 rounded-lg mt-1 py-1">
+                                        <div className="bg-teal-900/40 rounded-lg mt-1 py-1">
                                             {item.subItem.map((sub) => (
                                                 <NavLink
                                                     key={sub.id}
@@ -190,7 +218,7 @@ const SideBar: React.FC<SidebarProps> = ({ isMobileOpen, setIsMobileOpen }) => {
                                                         `block pl-11 pr-3 py-2 text-sm rounded-md transition-colors truncate
                                         ${isActive
                                                             ? "text-white font-medium bg-teal-600/50"
-                                                            : "text-teal-100 hover:text-white hover:bg-green-700"
+                                                            : "text-teal-100 hover:text-white hover:bg-teal-800/50"
                                                         }
                                         `
                                                     }
@@ -213,7 +241,7 @@ const SideBar: React.FC<SidebarProps> = ({ isMobileOpen, setIsMobileOpen }) => {
                                     onClick={closeMobileSidebar}
                                     className={({ isActive }) =>
                                         `flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200
-                            ${isActive ? "bg-green-600" : "hover:bg-green-700"}
+                            ${isActive ? "bg-teal-600/40 text-teal-300" : "hover:bg-teal-800/50"}
                             ${isCollapsed ? "justify-center" : ""}
                             `
                                     }
@@ -243,11 +271,11 @@ const SideBar: React.FC<SidebarProps> = ({ isMobileOpen, setIsMobileOpen }) => {
                     {otherItems.map((item) => (
                         <NavLink
                             key={item.id}
-                            to={`/admin/${item.id}`}
+                            to={item.path || `/todoapp/${item.id}`}
                             onClick={closeMobileSidebar}
                             className={({ isActive }) =>
                                 `flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200
-                        ${isActive ? "bg-green-600" : "hover:bg-green-700"}
+                        ${isActive ? "bg-teal-600/40 text-teal-300" : "hover:bg-teal-800/50"}
                         ${isCollapsed ? "justify-center" : ""}
                         `
                             }
@@ -262,6 +290,21 @@ const SideBar: React.FC<SidebarProps> = ({ isMobileOpen, setIsMobileOpen }) => {
                         </NavLink>
                     ))}
                 </nav>
+
+                {/* Nút Đăng Xuất */}
+                <div className="px-3 mt-4 mb-6 absolute bottom-0 w-full">
+                    <button
+                        onClick={handleLogout}
+                        className={`w-full flex items-center px-3 py-2.5 rounded-lg text-red-400 hover:text-white hover:bg-red-500/80 transition-colors duration-200
+                        ${isCollapsed ? "justify-center" : ""}`}
+                        title={isCollapsed ? "Đăng xuất" : ""}
+                    >
+                        <span className="flex-shrink-0"><LogOut size={20} /></span>
+                        {!isCollapsed && (
+                            <span className="font-medium truncate ml-3">Đăng xuất</span>
+                        )}
+                    </button>
+                </div>
             </div>
         </div>
     );

@@ -14,10 +14,10 @@ export const TaskCard = ({
     <div
       draggable
       onDragStart={(e) => onDragStart(e, task.id)}
-      className={`bg-[#18261F] p-4 rounded-2xl cursor-grab active:cursor-grabbing border ${task.status === 'IN PROGRESS' && task.id === '3'
-        ? 'border-[#2DD480]'
-        : 'border-[#22352B]'
-        } hover:border-[#2DD480]/50 transition-colors shadow-sm`}
+      className={`bg-[#1a2f2a]/60 backdrop-blur-md p-4 rounded-2xl cursor-grab active:cursor-grabbing border ${task.status === 'IN PROGRESS' && task.id === '3'
+        ? 'border-teal-400'
+        : 'border-teal-800/50'
+        } hover:border-teal-400/50 hover:bg-[#1a2f2a]/80 transition-colors shadow-xl`}
     >
       {/* Header Card: Priority & Date */}
       <div className="flex justify-between items-center mb-3">
@@ -25,7 +25,7 @@ export const TaskCard = ({
           className={`text-[10px] font-bold px-2 py-1 rounded-md ${task.priority === 'HIGH PRIORITY'
             ? 'bg-[#FF4D4D]/10 text-[#FF4D4D]'
             : task.priority === 'MEDIUM PRIORITY'
-              ? 'bg-[#2DD480]/10 text-[#2DD480]'
+              ? 'bg-teal-500/10 text-teal-400'
               : 'bg-gray-500/10 text-gray-400'
             }`}
         >
@@ -45,7 +45,7 @@ export const TaskCard = ({
       {/* Tags */}
       <div className="flex gap-2 mb-4">
         {task.tags.map((tag: any) => (
-          <span key={tag} className="bg-[#22352B] text-[#A3B8AD] text-[10px] font-medium px-2 py-1 rounded-md">
+          <span key={tag} className="bg-[#0f1f1b] border border-teal-800/50 text-teal-300 text-[10px] font-medium px-2 py-1 rounded-md">
             {tag}
           </span>
         ))}
@@ -56,11 +56,11 @@ export const TaskCard = ({
         <div className="mb-4">
           <div className="flex justify-between text-[10px] font-semibold text-gray-400 mb-1.5">
             <span>PROGRESS</span>
-            <span className="text-[#2DD480]">{task.progress}%</span>
+            <span className="text-teal-400">{task.progress}%</span>
           </div>
-          <div className="w-full bg-[#111A15] rounded-full h-1.5">
+          <div className="w-full bg-[#0f1f1b] rounded-full h-1.5">
             <div
-              className="bg-[#2DD480] h-1.5 rounded-full"
+              className="bg-teal-500 h-1.5 rounded-full"
               style={{ width: `${task.progress}%` }}
             ></div>
           </div>
@@ -74,9 +74,9 @@ export const TaskCard = ({
           <div className="w-6 h-6 rounded-full bg-blue-500 border border-[#18261F]"></div>
           <div className="w-6 h-6 rounded-full bg-purple-500 border border-[#18261F]"></div>
         </div> */}
-        <div className={`flex items-center text-xs font-semibold ${isCompleted ? 'text-[#2DD480]' : 'text-gray-400'}`}>
+        <div className={`flex items-center text-xs font-semibold ${isCompleted ? 'text-teal-400' : 'text-gray-400'}`}>
           {isCompleted ? (
-            <span className="bg-[#2DD480]/10 px-2 py-1 rounded-md flex items-center">
+            <span className="bg-teal-500/10 text-teal-400 px-2 py-1 rounded-md flex items-center">
               <CheckCircle2 size={12} className="mr-1" /> Hoàn thành
             </span>
           ) : (
@@ -88,7 +88,7 @@ export const TaskCard = ({
         </div>
 
         {/* edit button */}
-        <button className="bg-[#2DD480] text-[#0D1511] px-5 py-2 rounded-full font-bold text-sm flex items-center gap-2 hover:bg-[#25b56d] transition-colors"
+        <button className="bg-teal-500 text-[#0f1f1b] px-5 py-2 rounded-full font-bold text-sm flex items-center gap-2 hover:bg-teal-400 transition-colors shadow-[0_0_10px_rgba(20,184,166,0.2)]"
           onClick={() => navigate(`/todoapp/tasks/${task.id}`)}>
           <Edit size={16} /> Chỉnh sửa
         </button>

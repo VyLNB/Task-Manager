@@ -49,7 +49,7 @@ export const KanbanColumn = ({
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
       className={`flex flex-col gap-4 p-2 rounded-xl transition-colors ${
-        isOver ? 'bg-[#18261F]/50' : 'bg-transparent'
+        isOver ? 'bg-[#1a2f2a]/40 backdrop-blur-sm border border-teal-800/50' : 'bg-transparent'
       }`}
     >
       {/* Column Header */}
@@ -57,11 +57,11 @@ export const KanbanColumn = ({
         <div className="flex items-center gap-2">
           <div
             className={`w-2 h-2 rounded-full ${
-              isToDo ? 'bg-gray-300' : isInProgress ? 'bg-[#2DD480]' : 'bg-[#2DD480]'
+              isToDo ? 'bg-teal-200/40' : isInProgress ? 'bg-teal-400' : 'bg-teal-400'
             }`}
           ></div>
           <h3 className="text-sm font-bold text-white tracking-wide">{title}</h3>
-          <span className="bg-[#18261F] text-gray-300 text-xs font-bold px-2 py-0.5 rounded-full">
+          <span className="bg-teal-900/40 border border-teal-800/50 text-teal-300 text-xs font-bold px-2 py-0.5 rounded-full">
             {tasks.length}
           </span>
         </div>
@@ -79,8 +79,8 @@ export const KanbanColumn = ({
 
       {isToDo && (
         <button 
-          className="w-full py-3 mt-2 border border-dashed border-[#22352B] text-gray-400 
-          rounded-2xl hover:bg-[#18261F] hover:text-white transition-colors flex items-center justify-center gap-2 font-medium text-sm"
+          className="w-full py-3 mt-2 border border-dashed border-teal-800/50 text-teal-200/60 
+          rounded-2xl hover:bg-teal-900/40 hover:text-teal-400 hover:border-teal-600 transition-colors flex items-center justify-center gap-2 font-medium text-sm"
           onClick={() => navigate('/todoapp/newTask')}
         >
           <Plus size={18} /> Thêm công việc mới

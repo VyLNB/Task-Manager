@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import ToDoForm from '../../components/ToDoForm';
+import ToDoForm from '../../components/TaskForm';
 import { createTask } from '../../services/todo';
 import { getWorkspaces } from '../../services/workspace';
 import type { ToDoItemFormData } from '../../interfaces/todo';
@@ -28,19 +28,19 @@ const AddTask = () => {
     const handleSubmit = async (formData: ToDoFormItem) => {
         try {
             setIsSubmitting(true);
-            
+
             const payload: ToDoItemFormData = {
                 title: formData.title,
                 description: formData.description,
-                status: 'TO DO', 
+                status: 'TO DO',
                 workspaceId: formData.workspaceId
             };
 
             console.log('Creating task:', payload);
             await createTask(payload);
-            
+
             navigate("/todoapp/tasks");
-            
+
         } catch (error) {
             console.error('Error creating task:', error);
             alert("Có lỗi xảy ra khi tạo công việc mới!");
@@ -62,8 +62,8 @@ const AddTask = () => {
                 </div>
             )}
 
-            <ToDoForm 
-                isEditMode={false} 
+            <ToDoForm
+                isEditMode={false}
                 onSubmit={handleSubmit}
                 onCancel={handleCancel}
                 workspaces={workspaces}

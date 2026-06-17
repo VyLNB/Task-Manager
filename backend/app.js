@@ -9,8 +9,12 @@ dotenv.config();
 
 // Import routes
 import router from "./routes/index.js"
+import { initializeRoles } from './config/initRoles.js';
 
 const app = express();
+
+// Initialize DB Roles
+initializeRoles();
 
 // Middleware
 app.use(logger('dev'));

@@ -3,7 +3,7 @@ import {
   DialogPanel,
   DialogTitle,
 } from "@headlessui/react";
-import { Fragment, useRef } from "react";
+import { useRef } from "react";
 import { BsExclamationTriangle } from "react-icons/bs";
 
 interface ConfirmDialogProps {
@@ -34,19 +34,19 @@ export default function ConfirmDialog({
   const getIconBgColor = () => {
     if (variant === "danger") return "bg-red-500/20";
     if (variant === "warning") return "bg-yellow-500/20";
-    return "bg-[#2DD480]/20";
+    return "bg-teal-900/40";
   };
 
   const getIconColor = () => {
     if (variant === "danger") return "text-red-500";
     if (variant === "warning") return "text-yellow-500";
-    return "text-[#2DD480]";
+    return "text-teal-400";
   };
 
   const getButtonColor = () => {
     if (variant === "danger") return "bg-red-600 hover:bg-red-700 focus:ring-red-500 text-white border-transparent";
     if (variant === "warning") return "bg-yellow-600 hover:bg-yellow-700 focus:ring-yellow-500 text-white border-transparent";
-    return "bg-[#2DD480] hover:bg-[#25b56d] text-[#0D1511] focus:ring-[#2DD480] font-bold border-transparent";
+    return "bg-teal-500 hover:bg-teal-400 text-[#0f1f1b] focus:ring-teal-500 font-bold border-transparent";
   };
 
   return (
@@ -62,7 +62,7 @@ export default function ConfirmDialog({
 
       <div className="fixed inset-0 z-[9999] overflow-y-auto">
         <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-          <DialogPanel className="relative transform overflow-hidden rounded-xl bg-[#18261F] border border-gray-700 text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+          <DialogPanel className="relative transform overflow-hidden rounded-xl bg-[#1a2f2a] border border-teal-800 text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
                 <div className="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                   <div className="sm:flex sm:items-start">
                     {/* Icon cảnh báo */}
@@ -91,7 +91,7 @@ export default function ConfirmDialog({
                 </div>
 
                 {/* Các nút bấm hành động */}
-                <div className="bg-[#131E18] px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 border-t border-gray-800">
+                <div className="bg-teal-900/10 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 border-t border-teal-800/50">
                   <button
                     type="button"
                     disabled={isLoading}

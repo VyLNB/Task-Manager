@@ -102,7 +102,10 @@ export const createTask = async (req, res) => {
         });
 
         const savedTask = await newTask.save();
-        res.status(201).json(savedTask);
+        const taskObj = savedTask.toObject();
+        const { _id, ...rest } = taskObj;
+        
+        res.status(201).json({ _id, ...rest });
     } catch (error) {
         res.status(500).json({ message: "Lỗi khi tạo công việc", error: error.message });
     }

@@ -14,29 +14,29 @@ export default function WorkspaceKanban() {
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#0D1511] font-sans p-8">
+    <div className="min-h-screen bg-[#0f1f1b] font-sans p-8">
       <div className="max-w-7xl mx-auto">
         {/* Breadcrumb & Header */}
         <div className="mb-8">
-          <p className="text-[#2DD480] text-xs font-bold tracking-wider mb-2">
-            WORKSPACE <span className="text-gray-500 mx-1">&gt;</span> KANBAN BOARD
+          <p className="text-teal-400 text-xs font-bold tracking-wider mb-2">
+            WORKSPACE <span className="text-teal-200/40 mx-1">&gt;</span> KANBAN BOARD
           </p>
           <div className="flex justify-between items-end">
             <div>
               <h1 className="text-3xl font-bold text-white mb-1">Workspace Tasks</h1>
-              <p className="text-gray-400 text-sm">Quản lý các công việc trong Workspace này.</p>
+              <p className="text-teal-200/60 text-sm">Quản lý các công việc trong Workspace này.</p>
             </div>
             <div className="flex gap-3">
               <button 
                 onClick={() => setIsInviteModalOpen(true)}
-                className="bg-[#18261F] text-white px-4 py-2 rounded-full 
+                className="bg-[#1a2f2a] text-teal-200 px-4 py-2 rounded-full border border-teal-800/50 
                           font-semibold text-sm flex items-center 
-                          gap-2 hover:bg-[#22352B] transition-colors">
+                          gap-2 hover:bg-teal-900/40 transition-colors">
                 <User size={16} /> Invite Member
               </button>
               <button 
-                className="bg-[#2DD480] text-[#0D1511] px-5 py-2 rounded-full 
-                          font-bold text-sm flex items-center gap-2 hover:bg-[#25b56d] transition-colors"
+                className="bg-teal-500 text-[#0f1f1b] px-5 py-2 rounded-full 
+                          font-bold text-sm flex items-center gap-2 hover:bg-teal-400 transition-colors shadow-[0_0_15px_rgba(20,184,166,0.3)] hover:shadow-[0_0_20px_rgba(20,184,166,0.5)]"
                 onClick={() => setIsModalOpen(true)}>
                 <CheckSquare size={16} /> Create New Task
               </button>

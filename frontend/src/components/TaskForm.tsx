@@ -120,8 +120,8 @@ const ToDoForm: React.FC<TaskDetailProps> = ({
             value={workspaceId}
             onChange={(e) => setWorkspaceId(e.target.value)}
             disabled={!!initialWorkspaceId}
-            className="w-full px-3 py-2 border border-gray-600 rounded-md focus:outline-none 
-                        focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white bg-[#18261F] disabled:opacity-60"
+            className="w-full px-3 py-2 border border-teal-700 rounded-md focus:outline-none 
+                        focus:ring-1 focus:ring-teal-500 focus:border-teal-500 text-white bg-[#0f1f1b] disabled:opacity-60"
           >
             <option value="">-- Công việc cá nhân --</option>
             {workspaces.map(ws => (
@@ -140,8 +140,8 @@ const ToDoForm: React.FC<TaskDetailProps> = ({
             placeholder="Nhập tên công việc..."
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none 
-                        focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white"
+            className="w-full px-3 py-2 border border-teal-700 bg-[#0f1f1b] rounded-md focus:outline-none 
+                        focus:ring-1 focus:ring-teal-500 focus:border-teal-500 text-white"
           />
         </div>
 
@@ -155,8 +155,8 @@ const ToDoForm: React.FC<TaskDetailProps> = ({
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             rows={4}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none 
-                      focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-white"
+            className="w-full px-3 py-2 border border-teal-700 bg-[#0f1f1b] rounded-md focus:outline-none 
+                      focus:ring-1 focus:ring-teal-500 focus:border-teal-500 resize-none text-white"
           />
         </div>
 
@@ -166,7 +166,7 @@ const ToDoForm: React.FC<TaskDetailProps> = ({
             <button
               type="button"
               onClick={handleDelete}
-              className="px-6 py-2 text-white bg-red-600 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
+              className="px-6 py-2 text-red-500 bg-red-500/10 border border-red-500/50 rounded-xl hover:bg-red-500/20 font-medium transition-colors focus:outline-none"
             >
               Xóa
             </button>
@@ -175,15 +175,15 @@ const ToDoForm: React.FC<TaskDetailProps> = ({
           <div className="flex gap-3 ml-auto">
             <button
               type="button"
-              onClick={handleCancelClick} // ĐỔI TỪ handleCancel THÀNH handleCancelClick
-              className="px-6 py-2 text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500"
+              onClick={handleCancelClick}
+              className="px-6 py-2 rounded-xl font-medium text-teal-200/60 hover:text-white hover:bg-teal-800/50 transition-colors focus:outline-none"
             >
               Hủy bỏ
             </button>
             <button
               type="button"
               onClick={handleSubmit}
-              className="px-6 py-2 text-white bg-[#2DD480] rounded-md hover:bg-[#2DD480]/80 focus:outline-none focus:ring-2 focus:ring-[#2DD480]/50"
+              className="px-6 py-2 rounded-xl bg-teal-500 hover:bg-teal-400 text-[#0f1f1b] font-bold transition-colors shadow-[0_0_15px_rgba(20,184,166,0.3)] focus:outline-none"
             >
               {isEditMode ? 'Cập nhật' : 'Tạo công việc'}
             </button>
