@@ -24,8 +24,12 @@ interface MenuItem {
     }[];
 }
 
-const SideBar: React.FC = () => {
-    const [isMobileOpen, setIsMobileOpen] = React.useState(false);
+interface SidebarProps {
+    isMobileOpen: boolean;
+    setIsMobileOpen: (isOpen: boolean) => void;
+}
+
+const SideBar: React.FC<SidebarProps> = ({ isMobileOpen, setIsMobileOpen }) => {
     const [isCollapsed, setIsCollapsed] = React.useState(false);
     const [openDropdownId, setOpenDropdownId] = React.useState<string | null>(null);
 

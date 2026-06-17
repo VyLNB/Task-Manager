@@ -10,10 +10,10 @@ import { verifyToken } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
-router.get('/getAll', verifyToken, getAllTasks);
+router.get('/', verifyToken, getAllTasks);
 router.get('/:id', verifyToken, getTaskById);
 router.get('/workspace/:workspaceId', verifyToken, getTasksByWorkspace);
-router.post('/createNew', verifyToken, createTask)
+router.post('/', verifyToken, createTask)
 router.put('/:id', verifyToken, updateTask);
 
 export default router;
