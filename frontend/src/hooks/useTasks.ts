@@ -39,6 +39,12 @@ export function useTasks(workspaceId?: string) {
                     tags: [tagName], 
                     completedSubtasks: currentStatus === 'COMPLETED' ? 1 : 0,
                     totalSubtasks: 1,
+                    assignee: item.assigneeId ? {
+                        fullName: item.assigneeId.fullName,
+                        email: item.assigneeId.email
+                    } : undefined,
+                    assigneeId: item.assigneeId ? item.assigneeId._id : undefined,
+                    creatorId: item.creatorId,
                 };
             });
             setTasks(convertedTasks);
@@ -52,6 +58,9 @@ export function useTasks(workspaceId?: string) {
 
     useEffect(() => {
         fetchTasks();
+        const handleTaskCreated = () => fetchTasks();
+        window.addEventListener('task_created', handleTaskCreated);
+        return () => window.removeEventListener('task_created', handleTaskCreated);
     }, [fetchTasks]);
 
     const handleUpdateTaskStatus = async (newStatus: Status, taskId: string) => {
@@ -66,11 +75,12 @@ export function useTasks(workspaceId?: string) {
 
         try {
             await updateTask(taskId, { status: newStatus } as any); 
-        } catch (error) {
+        } catch (error: any) {
             console.error('Failed to update task status:', error);
             setError('Failed to update task status. Please try again.');
             setTasks(previousTasks);
-            alert("Không thể cập nhật trạng thái, vui lòng thử lại!");
+            const msg = error.response?.data?.message || "Không thể cập nhật trạng thái, vui lòng thử lại!";
+            alert(msg);
         }
     };
 

@@ -22,7 +22,7 @@ const TaskSchema = new mongoose.Schema(
         },
         workspaceId: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Workspaces',
+            ref: 'workspaces',
             required: false,
             default: null,
             description: "Task này thuộc về Nhóm/Dự án nào (nếu để trống là cá nhân)"
@@ -63,6 +63,6 @@ const TaskSchema = new mongoose.Schema(
 TaskSchema.index({ workspaceId: 1 });
 TaskSchema.index({ assigneeId: 1 });
 
-const TaskModel = mongoose.model('Tasks', TaskSchema, 'Tasks');
+const TaskModel = mongoose.model('tasks', TaskSchema, 'tasks');
 
 export default TaskModel;

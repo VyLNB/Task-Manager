@@ -6,6 +6,17 @@ const WorkspaceSchema = new mongoose.Schema(
             type: String,
             required: true
         },
+        startDate: {
+            type: Date
+        },
+        endDate: {
+            type: Date
+        },
+        status: {
+            type: String,
+            enum: ['Kế hoạch', 'Đang thực hiện', 'Đã hoàn thành', 'Tạm dừng'],
+            default: 'Kế hoạch'
+        },
         leader: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Users',
@@ -21,4 +32,4 @@ const WorkspaceSchema = new mongoose.Schema(
     { timestamps: true }
 )
 
-export const WorkspaceModel = mongoose.model('Workspaces', WorkspaceSchema, 'Workspaces')
+export const WorkspaceModel = mongoose.model('workspaces', WorkspaceSchema, 'workspaces')

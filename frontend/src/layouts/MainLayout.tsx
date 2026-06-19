@@ -1,14 +1,21 @@
 import { useState } from "react"
-import { Outlet } from "react-router-dom"
+import { Outlet, useNavigate } from "react-router-dom"
 import { Menu, GraduationCap } from "lucide-react"
 import Sidebar from "../components/common/Sidebar"
+import { CreateTaskModal } from "../components/task/CreateTaskModal"
 
 export default function MainLayout() {
     const [isMobileOpen, setIsMobileOpen] = useState(false);
+    const [isCreateTaskModalOpen, setIsCreateTaskModalOpen] = useState(false);
+    const navigate = useNavigate();
 
     return (
         <div className="flex h-screen bg-gray-50">
-            <Sidebar isMobileOpen={isMobileOpen} setIsMobileOpen={setIsMobileOpen} />
+            <Sidebar 
+                isMobileOpen={isMobileOpen} 
+                setIsMobileOpen={setIsMobileOpen} 
+                onOpenCreateTask={() => setIsCreateTaskModalOpen(true)}
+            />
             <div className="flex-1 flex flex-col min-w-0 bg-[#0f1f1b]">
                 <header className="lg:hidden flex items-center justify-between p-4 bg-[#0f1f1b] text-white border-b border-teal-800/50">
                     <div className="flex items-center space-x-3">
@@ -32,6 +39,15 @@ export default function MainLayout() {
                     onClick={() => setIsMobileOpen(false)}
                 />
             )}
+
+            <CreateTaskModal 
+                isOpen={isCreateTaskModalOpen} 
+                onClose={() => setIsCreateTaskModalOpen(false)} 
+                onSuccess={() => {
+                    navigate('/todoapp/tasks');
+                    window.dispatchEvent(new Event('task_created'));
+                }} 
+            />
         </div>
     )
 }

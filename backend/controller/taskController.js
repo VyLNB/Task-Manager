@@ -16,6 +16,7 @@ export const getAllTasks = async (req, res) => {
             ]
         })
         .populate('workspaceId', 'name')
+        .populate('assigneeId', 'fullName email')
         .sort({ createdAt: -1 });
 
         res.status(200).json(tasks);
@@ -38,6 +39,7 @@ export const getTasksByWorkspace = async (req, res) => {
 
         const tasks = await TaskModel.find({ workspaceId })
             .populate('workspaceId', 'name')
+            .populate('assigneeId', 'fullName email')
             .sort({ createdAt: -1 });
         res.status(200).json(tasks);
     } catch (error) {
@@ -47,7 +49,9 @@ export const getTasksByWorkspace = async (req, res) => {
 
 export const getTaskById = async (req, res) => {
     try {
-        const task = await TaskModel.findById(req.params.id).populate('workspaceId', 'name');
+        const task = await TaskModel.findById(req.params.id)
+            .populate('workspaceId', 'name')
+            .populate('assigneeId', 'fullName email');
         if (!task) {
             return res.status(404).json({ message: "Không tìm thấy công việc" });
         }
@@ -77,7 +81,7 @@ export const getTaskById = async (req, res) => {
 // tạo công việc mới
 export const createTask = async (req, res) => {
     try {
-        const { workspaceId, title, description, priority, dueDate, startDate, tags } = req.body;
+        const { workspaceId, title, description, priority, dueDate, startDate, tags, assigneeId } = req.body;
 
         if (workspaceId) {
             const workspace = await WorkspaceModel.findOne({
@@ -98,7 +102,8 @@ export const createTask = async (req, res) => {
             priority,
             dueDate,
             startDate,
-            tags
+            tags,
+            assigneeId: assigneeId || null
         });
 
         const savedTask = await newTask.save();
@@ -126,7 +131,16 @@ export const updateTask = async (req, res) => {
             });
 
             if (!workspace) {
-                return res.status(403).json({ message: "Bạn không có quyền cập nhật công việc này" });
+                return res.status(403).json({ message: "Bạn không có quyền truy cập công việc này" });
+            }
+
+            // Check if user is Assignee, Creator, or Workspace Leader
+            const isAssignee = task.assigneeId && task.assigneeId.toString() === req.userId;
+            const isCreator = task.creatorId && task.creatorId.toString() === req.userId;
+            const isLeader = workspace.leader && workspace.leader.toString() === req.userId;
+
+            if (!isAssignee && !isCreator && !isLeader) {
+                return res.status(403).json({ message: "Chỉ người được giao việc hoặc Quản lý dự án mới có quyền cập nhật công việc này" });
             }
         } else {
             // Task cá nhân

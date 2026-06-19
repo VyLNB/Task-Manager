@@ -3,13 +3,14 @@ import Dashboard from "../pages/main/Dashboard";
 import MainLayout from "../layouts/MainLayout";
 import TasksPage from "../pages/main/TasksPage";
 import TaskDetail from "../pages/main/TaskDetail";
-import AddTask from "../pages/main/AddTask";
 import LoginPage from "../pages/auth/LoginPage";
 import RegisterPage from "../pages/auth/RegisterPage";
 import Calendar from "../pages/main/Calendar";
 import WorkspacePage from "../pages/main/WorkspacePage";
 import WorkspaceKanban from "../pages/main/WorkspaceKanban";
 import PersonnelPage from "../pages/main/PersonnelPage";
+import ProjectPage from "../pages/main/ProjectPage";
+import ProtectedRoute from "../components/common/ProtectedRoute";
 
 
 const router = createBrowserRouter([
@@ -33,32 +34,60 @@ const router = createBrowserRouter([
             }, 
             {
                 path: "tasks",
-                element: <TasksPage />
+                element: (
+                    <ProtectedRoute requireMember={true}>
+                        <TasksPage />
+                    </ProtectedRoute>
+                )
             }, 
             {
                 
                 path: "tasks/:id",
-                element:<TaskDetail/>
-            }, 
-            {
-                path: "newTask",
-                element: <AddTask/>
+                element:(
+                    <ProtectedRoute requireMember={true}>
+                        <TaskDetail/>
+                    </ProtectedRoute>
+                )
             }, 
             {
                 path: "calendar",
-                element: <Calendar/>
+                element: (
+                    <ProtectedRoute requireMember={true}>
+                        <Calendar/>
+                    </ProtectedRoute>
+                )
             },
             {
                 path: "workspace",
-                element: <WorkspacePage/>
+                element: (
+                    <ProtectedRoute requireMember={true}>
+                        <WorkspacePage/>
+                    </ProtectedRoute>
+                )
             },
             {
                 path: "workspace/:id",
-                element: <WorkspaceKanban/>
+                element: (
+                    <ProtectedRoute requireMember={true}>
+                        <WorkspaceKanban/>
+                    </ProtectedRoute>
+                )
             },
             {
                 path: "personnel",
-                element: <PersonnelPage/>
+                element: (
+                    <ProtectedRoute requireAdmin={true}>
+                        <PersonnelPage/>
+                    </ProtectedRoute>
+                )
+            },
+            {
+                path: "project",
+                element: (
+                    <ProtectedRoute requireAdmin={true}>
+                        <ProjectPage/>
+                    </ProtectedRoute>
+                )
             }
         ]
     }

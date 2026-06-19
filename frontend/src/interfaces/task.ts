@@ -11,4 +11,10 @@ export interface Task {
   progress?: number;
   completedSubtasks?: number;
   totalSubtasks?: number;
+  assignee?: {
+    fullName: string;
+    email: string;
+  };
+  assigneeId?: string;
+  creatorId?: string;
 }

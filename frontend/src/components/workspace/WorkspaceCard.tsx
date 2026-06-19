@@ -45,10 +45,24 @@ export const WorkspaceCard: React.FC<WorkspaceCardProps> = ({
                     </svg>
                 </div>
 
-                <div className="bg-[#0f1f1b] border border-teal-800/50 px-3 py-1.5 rounded-full">
-                    <span className="text-teal-400 text-[11px] font-black tracking-widest uppercase">
-                        {category}
-                    </span>
+                <div className="flex gap-2">
+                    {workspace.status && (
+                        <div className={`border px-3 py-1.5 rounded-full
+                            ${workspace.status === 'Đã hoàn thành' ? 'bg-green-500/10 border-green-500/30 text-green-400' : ''}
+                            ${workspace.status === 'Đang thực hiện' ? 'bg-blue-500/10 border-blue-500/30 text-blue-400' : ''}
+                            ${workspace.status === 'Tạm dừng' ? 'bg-orange-500/10 border-orange-500/30 text-orange-400' : ''}
+                            ${workspace.status === 'Kế hoạch' ? 'bg-gray-500/10 border-gray-500/30 text-gray-400' : ''}
+                        `}>
+                            <span className="text-[11px] font-black uppercase">
+                                {workspace.status}
+                            </span>
+                        </div>
+                    )}
+                    <div className="bg-[#0f1f1b] border border-teal-800/50 px-3 py-1.5 rounded-full">
+                        <span className="text-teal-400 text-[11px] font-black tracking-widest uppercase">
+                            {category}
+                        </span>
+                    </div>
                 </div>
             </div>
 
@@ -57,9 +71,24 @@ export const WorkspaceCard: React.FC<WorkspaceCardProps> = ({
                 <h2 className="text-white text-2xl font-bold mb-2 tracking-wide truncate">
                     {workspace.name}
                 </h2>
-                <p className="text-teal-200/60 text-sm leading-relaxed pr-4 line-clamp-2">
+                <p className="text-teal-200/60 text-sm leading-relaxed pr-4 line-clamp-2 mb-1">
                     Leader: {leader.fullName}
                 </p>
+                {(workspace.startDate || workspace.endDate) && (
+                    <div className="flex items-center text-teal-400/80 text-xs mt-2 bg-teal-900/20 w-fit px-2 py-1 rounded-md">
+                        <svg className="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                        <span>
+                            {workspace.startDate ? new Date(workspace.startDate).toLocaleDateString('vi-VN') : '...'} 
+                            {' - '} 
+                            {workspace.endDate ? new Date(workspace.endDate).toLocaleDateString('vi-VN') : '...'}
+                        </span>
+                    </div>
+                )}
             </div>
 
             {/* --- Bottom Section: Avatars, Tasks & Button --- */}

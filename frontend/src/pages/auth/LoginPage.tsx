@@ -22,8 +22,13 @@ const LoginPage: React.FC = () => {
       const response = await signin({ email, password });
       if (response.data) {
         localStorage.setItem('user', JSON.stringify(response.data));
+        const roleName = response.data?.user?.role?.name;
+        if (roleName === 'Admin') {
+           navigate('/todoapp/personnel');
+        } else {
+           navigate('/todoapp/dashboard');
+        }
       }
-      navigate('/todoapp/dashboard');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Đăng nhập thất bại');
     } finally {

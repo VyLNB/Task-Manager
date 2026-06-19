@@ -7,13 +7,16 @@ import {
     getTasksByWorkspace
 } from '../controller/taskController.js';
 import { verifyToken } from '../middlewares/authMiddleware.js';
+import { checkMember } from '../middlewares/permissionMiddleware.js';
 
 const router = express.Router();
 
-router.get('/', verifyToken, getAllTasks);
-router.get('/:id', verifyToken, getTaskById);
-router.get('/workspace/:workspaceId', verifyToken, getTasksByWorkspace);
-router.post('/', verifyToken, createTask)
-router.put('/:id', verifyToken, updateTask);
+router.use(verifyToken, checkMember);
+
+router.get('/', getAllTasks);
+router.get('/:id', getTaskById);
+router.get('/workspace/:workspaceId', getTasksByWorkspace);
+router.post('/', createTask)
+router.put('/:id', updateTask);
 
 export default router;

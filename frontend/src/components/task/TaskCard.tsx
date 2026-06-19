@@ -10,14 +10,23 @@ export const TaskCard = ({
 }) => {
   const isCompleted = task.status === 'COMPLETED';
   const navigate = useNavigate();
+
+  // Kiểm tra quyền chỉnh sửa
+  const userString = localStorage.getItem('user');
+  const userObj = userString ? JSON.parse(userString) : null;
+  const currentUserId = userObj?.user?.id;
+  const isPM = userObj?.user?.role?.name === 'Project Manager';
+
+  const canEdit = isPM || task.creatorId === currentUserId || task.assigneeId === currentUserId;
+
   return (
     <div
-      draggable
-      onDragStart={(e) => onDragStart(e, task.id)}
-      className={`bg-[#1a2f2a]/60 backdrop-blur-md p-4 rounded-2xl cursor-grab active:cursor-grabbing border ${task.status === 'IN PROGRESS' && task.id === '3'
+      draggable={canEdit}
+      onDragStart={(e) => canEdit && onDragStart(e, task.id)}
+      className={`bg-[#1a2f2a]/60 backdrop-blur-md p-4 rounded-2xl border ${task.status === 'IN PROGRESS' && task.id === '3'
         ? 'border-teal-400'
         : 'border-teal-800/50'
-        } hover:border-teal-400/50 hover:bg-[#1a2f2a]/80 transition-colors shadow-xl`}
+        } ${canEdit ? 'cursor-grab active:cursor-grabbing hover:border-teal-400/50 hover:bg-[#1a2f2a]/80' : 'cursor-not-allowed opacity-80'} transition-colors shadow-xl`}
     >
       {/* Header Card: Priority & Date */}
       <div className="flex justify-between items-center mb-3">
@@ -68,30 +77,52 @@ export const TaskCard = ({
       )}
 
       {/* Footer: Avatars & Subtasks */}
-      <div className="flex justify-between items-center mt-auto">
-        {/* <div className="flex -space-x-2">
-        
-          <div className="w-6 h-6 rounded-full bg-blue-500 border border-[#18261F]"></div>
-          <div className="w-6 h-6 rounded-full bg-purple-500 border border-[#18261F]"></div>
-        </div> */}
-        <div className={`flex items-center text-xs font-semibold ${isCompleted ? 'text-teal-400' : 'text-gray-400'}`}>
-          {isCompleted ? (
-            <span className="bg-teal-500/10 text-teal-400 px-2 py-1 rounded-md flex items-center">
-              <CheckCircle2 size={12} className="mr-1" /> Hoàn thành
-            </span>
-          ) : (
-            <>
-              <CheckSquare size={14} className="mr-1" />
-              {task.completedSubtasks}/{task.totalSubtasks}
-            </>
-          )}
+      <div className="mt-auto pt-4 border-t border-teal-800/30 flex flex-col gap-3">
+        {/* Assignee & Subtasks Row */}
+        <div className="flex justify-between items-center">
+          <div className="flex items-center">
+            {task.assignee ? (
+              <div className="flex items-center gap-2" title={task.assignee.email}>
+                <div className="w-6 h-6 rounded-full bg-teal-600 border border-teal-800 flex items-center justify-center text-[10px] font-bold text-white shadow-sm">
+                  {task.assignee.fullName.charAt(0).toUpperCase()}
+                </div>
+                <span className="text-xs text-teal-100 truncate max-w-[120px]" title={task.assignee.fullName}>{task.assignee.fullName}</span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2" title="Chưa phân công">
+                <div className="w-6 h-6 rounded-full bg-gray-600 border border-gray-500 flex items-center justify-center text-[10px] font-bold text-white shadow-sm">
+                  ?
+                </div>
+                <span className="text-xs text-gray-400">Chưa phân công</span>
+              </div>
+            )}
+          </div>
+          <div className={`flex items-center text-xs font-semibold ${isCompleted ? 'text-teal-400' : 'text-gray-400'}`}>
+            {isCompleted ? (
+              <span className="bg-teal-500/10 text-teal-400 px-2 py-1 rounded-md flex items-center">
+                <CheckCircle2 size={12} className="mr-1" /> Hoàn thành
+              </span>
+            ) : (
+              <>
+                <CheckSquare size={14} className="mr-1" />
+                {task.completedSubtasks}/{task.totalSubtasks}
+              </>
+            )}
+          </div>
         </div>
 
-        {/* edit button */}
-        <button className="bg-teal-500 text-[#0f1f1b] px-5 py-2 rounded-full font-bold text-sm flex items-center gap-2 hover:bg-teal-400 transition-colors shadow-[0_0_10px_rgba(20,184,166,0.2)]"
-          onClick={() => navigate(`/todoapp/tasks/${task.id}`)}>
-          <Edit size={16} /> Chỉnh sửa
-        </button>
+        {/* Action Row */}
+        {canEdit ? (
+          <button className="w-full bg-teal-500/10 text-teal-400 border border-teal-500/30 py-2 rounded-xl font-bold text-xs flex items-center justify-center gap-2 hover:bg-teal-500 hover:text-[#0f1f1b] transition-colors"
+            onClick={() => navigate(`/todoapp/tasks/${task.id}`)}>
+            <Edit size={14} /> Chỉnh sửa / Chi tiết
+          </button>
+        ) : (
+          <button className="w-full bg-gray-500/10 text-gray-400 border border-gray-500/30 py-2 rounded-xl font-bold text-xs flex items-center justify-center gap-2 hover:bg-gray-600/30 transition-colors"
+            onClick={() => navigate(`/todoapp/tasks/${task.id}`)}>
+            Chi tiết
+          </button>
+        )}
       </div>
     </div>
   );

@@ -3,7 +3,7 @@ import UserModel from "../model/UserModel.js";
 
 export const createWorkspace = async (req, res) => {
     try {
-        const { name } = req.body;
+        const { name, startDate, endDate, status } = req.body;
 
         if (!name) {
             return res.status(400).json({ message: "Vui lòng nhập tên Workspace" });
@@ -13,6 +13,9 @@ export const createWorkspace = async (req, res) => {
 
         const newWorkspace = new WorkspaceModel({
             name,
+            startDate: startDate ? new Date(startDate) : undefined,
+            endDate: endDate ? new Date(endDate) : undefined,
+            status: status || 'Kế hoạch',
             leader: leaderId,
             members: [leaderId]
         });
@@ -113,6 +116,26 @@ export const inviteMember = async (req, res) => {
         return res.status(500).json({
             message: 'Error inviting member',
             error: error.message
+        });
+    }
+}
+
+//just read
+export const getAllWorkspacesAdmin = async (req, res) => {
+    try {
+        const workspaces = await WorkspaceModel.find({})
+            .populate("leader", "fullName email")
+            .populate("members", "fullName email")
+            .sort({ createdAt: -1 });
+
+        res.status(200).json({
+            message: "Get all workspaces successfully",
+            data: workspaces
+        });
+    } catch (err) {
+        res.status(500).json({
+            message: "Error getting workspaces",
+            error: err.message
         });
     }
 }

@@ -7,6 +7,9 @@ export interface UserInterface {
 export interface WorkspaceInterface {
     _id: string;
     name: string;
+    startDate?: string;
+    endDate?: string;
+    status: 'Kế hoạch' | 'Đang thực hiện' | 'Đã hoàn thành' | 'Tạm dừng';
     leader: UserInterface;
     members: UserInterface[];
     createdAt: string;

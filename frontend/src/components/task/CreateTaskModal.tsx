@@ -17,10 +17,10 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ isOpen, onClos
     const [workspaces, setWorkspaces] = useState<WorkspaceInterface[]>([]);
 
     useEffect(() => {
-        if (isOpen && !workspaceId) {
+        if (isOpen) {
             getWorkspaces().then(res => setWorkspaces(res.data || [])).catch(console.error);
         }
-    }, [isOpen, workspaceId]);
+    }, [isOpen]);
 
     if (!isOpen) return null;
 
@@ -32,6 +32,7 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ isOpen, onClos
                 description: formData.description,
                 status: 'TO DO',
                 workspaceId: formData.workspaceId || workspaceId,
+                assigneeId: formData.assigneeId
             };
             await createTask(payload);
             onSuccess();

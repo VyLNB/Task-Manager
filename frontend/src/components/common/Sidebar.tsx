@@ -7,15 +7,17 @@ import {
     LayoutDashboard,
     ChevronLeft,
     GraduationCap,
-    Calendar,
+    // Calendar,
     UserCircle,
     LayersPlus,
     Users,
     Shield,
-    LogOut
+    LogOut,
+    File
 } from "lucide-react";
 
 import { signout } from "../../services/auth";
+import { usePermission } from "../../hooks/usePermission";
 
 
 interface MenuItem {
@@ -32,9 +34,10 @@ interface MenuItem {
 interface SidebarProps {
     isMobileOpen: boolean;
     setIsMobileOpen: (isOpen: boolean) => void;
+    onOpenCreateTask?: () => void;
 }
 
-const SideBar: React.FC<SidebarProps> = ({ isMobileOpen, setIsMobileOpen }) => {
+const SideBar: React.FC<SidebarProps> = ({ isMobileOpen, setIsMobileOpen, onOpenCreateTask }) => {
     const [isCollapsed, setIsCollapsed] = React.useState(false);
     const [openDropdownId, setOpenDropdownId] = React.useState<string | null>(null);
     const navigate = useNavigate();
@@ -44,40 +47,35 @@ const SideBar: React.FC<SidebarProps> = ({ isMobileOpen, setIsMobileOpen }) => {
         navigate('/');
     };
 
+    const { isAdmin } = usePermission();
+
     const menuItems: MenuItem[] = [
         {
             id: "dashboard",
             label: "Tổng quan",
             icon: <LayoutDashboard size={20} />,
-        },
-        {
-            id: "tasks",
-            label: "Công việc của tôi",
-            icon: <List size={20} />,
-        },
-        {
-            id: "newTask",
-            label: "Tạo mới",
-            icon: <LayersPlus size={20} />
-        },
-        {
-            id: "calendar",
-            label: "Lịch",
-            icon: <Calendar size={20} />
-        },
-        {
-            id: "workspace",
-            label: "Workspace",
-            icon: <Users size={20} />
         }
     ];
 
-    const userStr = localStorage.getItem("user");
-    const parsedUser = userStr ? JSON.parse(userStr) : null;
-    const userData = parsedUser?.user || parsedUser;
-    const isAdmin = userData?.role?.name === 'Admin' || userData?.role?.permissions?.includes('ALL');
-    
-    console.log("DEBUG SIDEBAR:", { parsedUser, userData, isAdmin });
+    if (!isAdmin) {
+        menuItems.push(
+            {
+                id: "tasks",
+                label: "Công việc của tôi",
+                icon: <List size={20} />,
+            },
+            {
+                id: "newTask",
+                label: "Tạo mới",
+                icon: <LayersPlus size={20} />
+            },
+            {
+                id: "workspace",
+                label: "Dự án",
+                icon: <Users size={20} />
+            }
+        );
+    }
 
     const otherItems: MenuItem[] = [
         {
@@ -91,10 +89,18 @@ const SideBar: React.FC<SidebarProps> = ({ isMobileOpen, setIsMobileOpen }) => {
     if (isAdmin) {
         menuItems.push({
             id: "personnel",
-            label: "Quản lý nhân sự",
+            label: "Nhân sự",
             icon: <Shield size={20} />,
             path: "/todoapp/personnel"
-        });
+        },
+        {
+            id: "project",
+            label: "Dự án",
+            icon: <File/>,
+            path: "/todoapp/project"
+        }
+        );
+
     }
 
     const handleDropdownToggle = (id: string) => {
@@ -229,6 +235,22 @@ const SideBar: React.FC<SidebarProps> = ({ isMobileOpen, setIsMobileOpen }) => {
                                         </div>
                                     </div>
                                 </div>
+                            ) : item.id === "newTask" ? (
+                                <button
+                                    onClick={() => {
+                                        closeMobileSidebar();
+                                        if (onOpenCreateTask) onOpenCreateTask();
+                                    }}
+                                    className={`w-full flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200 hover:bg-teal-800/50 ${isCollapsed ? "justify-center" : ""}`}
+                                    title={isCollapsed ? item.label : ""}
+                                >
+                                    <span className="flex-shrink-0">{item.icon}</span>
+                                    {!isCollapsed && (
+                                        <span className="font-medium truncate ml-3">
+                                            {item.label}
+                                        </span>
+                                    )}
+                                </button>
                             ) : (
                                 /* Normal Menu Item */
                                 <NavLink

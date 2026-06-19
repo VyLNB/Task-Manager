@@ -11,6 +11,7 @@ interface ToDoItemInterface {
   priority: string;
   tags: string[];
   workspaceId?: string;
+  assigneeId?: string;
 }
 
 interface TaskDetailProps {
@@ -38,6 +39,7 @@ const ToDoForm: React.FC<TaskDetailProps> = ({
   const [priority, setPriority] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const [workspaceId, setWorkspaceId] = useState<string>('');
+  const [assigneeId, setAssigneeId] = useState<string>('');
   const [isCancelDialogOpen, setIsCancelDialogOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -50,6 +52,7 @@ const ToDoForm: React.FC<TaskDetailProps> = ({
       setPriority(initialData.priority || '');
       setTags(initialData.tags || []);
       setWorkspaceId(initialData.workspaceId || initialWorkspaceId || '');
+      setAssigneeId(initialData.assigneeId || '');
     } else {
       // Reset form khi ở chế độ thêm mới
       setTitle('');
@@ -58,8 +61,11 @@ const ToDoForm: React.FC<TaskDetailProps> = ({
       setPriority('');
       setTags([]);
       setWorkspaceId(initialWorkspaceId || '');
+      setAssigneeId('');
     }
   }, [isEditMode, initialData, initialWorkspaceId]);
+
+  const selectedWorkspace = workspaces.find(ws => ws._id === workspaceId);
 
 
 
@@ -72,7 +78,8 @@ const ToDoForm: React.FC<TaskDetailProps> = ({
       deadline,
       priority,
       tags,
-      workspaceId
+      workspaceId,
+      assigneeId: workspaceId ? assigneeId : undefined
     };
 
     if (onSubmit) {
@@ -91,7 +98,7 @@ const ToDoForm: React.FC<TaskDetailProps> = ({
     setIsCancelDialogOpen(true);
   };
 
-  // Hàm này được gọi khi user CONFIRM trong dialog
+  // Hàm này được gọi khi user confirm trong dialog
   const handleConfirmCancel = () => {
     setIsCancelDialogOpen(false);
     if (onCancel) {
@@ -129,6 +136,26 @@ const ToDoForm: React.FC<TaskDetailProps> = ({
             ))}
           </select>
         </div>
+
+        {/* Assignee (Chỉ hiện khi thuộc Workspace) */}
+        {workspaceId && selectedWorkspace && (
+          <div>
+            <label className="block text-sm font-medium text-white mb-2">
+              Người thực hiện
+            </label>
+            <select
+              value={assigneeId}
+              onChange={(e) => setAssigneeId(e.target.value)}
+              className="w-full px-3 py-2 border border-teal-700 rounded-md focus:outline-none 
+                          focus:ring-1 focus:ring-teal-500 focus:border-teal-500 text-white bg-[#0f1f1b]"
+            >
+              <option value="">-- Chọn thành viên --</option>
+              {selectedWorkspace.members.map(member => (
+                <option key={member._id} value={member._id}>{member.fullName} ({member.email})</option>
+              ))}
+            </select>
+          </div>
+        )}
 
         {/* Tiêu đề */}
         <div>
@@ -195,7 +222,7 @@ const ToDoForm: React.FC<TaskDetailProps> = ({
       <ConfirmDialog
         isOpen={isCancelDialogOpen}
         onClose={() => setIsCancelDialogOpen(false)}
-        onConfirm={handleConfirmCancel} // ĐỔI TỪ handleCancel THÀNH handleConfirmCancel
+        onConfirm={handleConfirmCancel} 
         title="Rời khỏi trang?"
         message="Bạn có thay đổi chưa lưu. Bạn có chắc chắn muốn rời khỏi trang này không?"
         confirmText="Rời đi"
