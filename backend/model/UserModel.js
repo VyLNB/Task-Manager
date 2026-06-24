@@ -23,6 +23,10 @@ const UserSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Roles',
             required: false // Optional in DB, handled by logic
+        },
+        isActive: {
+            type: Boolean,
+            default: true
         }
     },
     { timestamps: true }

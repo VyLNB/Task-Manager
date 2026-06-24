@@ -110,6 +110,14 @@ export const login = async (req, res) => {
             });
         }
 
+        // Kiểm tra tài khoản có bị vô hiệu hóa không
+        if (user.isActive === false) {
+            return res.status(403).json({
+                message: 'Tài khoản của bạn đã bị vô hiệu hóa. Vui lòng liên hệ quản trị viên.',
+                timestamp: new Date().toISOString()
+            });
+        }
+
         //  Tạo token
         const { accessToken, refreshToken } = generateTokens(user._id);
         user.refreshToken = refreshToken;

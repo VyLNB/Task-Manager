@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { getAllUsers } from "../../services/user";
+import { getAllUsers, toggleUserStatus } from "../../services/user";
 import { getAllRoles, assignRole, createRole, updateRole } from "../../services/role";
 import type { UserInterface } from "../../interfaces/user";
 import type { RoleInterface } from "../../interfaces/role";
-import { Shield, User, Mail, Calendar, Key, AlertCircle, Plus, Edit2, X, CheckCircle2 } from "lucide-react";
+import { Shield, User, Mail, Calendar, Key, AlertCircle, Plus, Edit2, X, CheckCircle2, Power } from "lucide-react";
 
 const AVAILABLE_PERMISSIONS = [
     { id: 'ALL', label: 'Toàn quyền hệ thống (ALL)' },
@@ -67,6 +67,21 @@ export default function PersonnelPage() {
         } catch (err) {
             const error = err as any;
             alert(error.response?.data?.message || "Lỗi khi cập nhật quyền");
+        } finally {
+            setUpdatingId(null);
+        }
+    };
+
+    const handleToggleStatus = async (userId: string) => {
+        try {
+            setUpdatingId(userId);
+            const res = await toggleUserStatus(userId);
+            setUsers(users.map(u => 
+                u._id === userId ? { ...u, isActive: res.isActive } : u
+            ));
+        } catch (err) {
+            const error = err as any;
+            alert(error.response?.data?.message || "Lỗi khi cập nhật trạng thái");
         } finally {
             setUpdatingId(null);
         }
@@ -141,7 +156,7 @@ export default function PersonnelPage() {
                 <div>
                     <h1 className="text-3xl font-bold text-white flex items-center">
                         <Shield className="mr-3 text-teal-400" size={32} />
-                        Quản trị Hệ thống
+                        Quản trị Nhân sự
                     </h1>
                     <p className="text-teal-200/60 mt-1">
                         Quản lý danh sách thành viên và thiết lập phân quyền
@@ -184,6 +199,7 @@ export default function PersonnelPage() {
                                     <th className="py-4 px-6 font-semibold text-teal-100/80">Thành viên</th>
                                     <th className="py-4 px-6 font-semibold text-teal-100/80">Liên hệ</th>
                                     <th className="py-4 px-6 font-semibold text-teal-100/80">Ngày tham gia</th>
+                                    <th className="py-4 px-6 font-semibold text-teal-100/80">Trạng thái</th>
                                     <th className="py-4 px-6 font-semibold text-teal-100/80 w-64">Phân quyền (Role)</th>
                                 </tr>
                             </thead>
@@ -208,6 +224,24 @@ export default function PersonnelPage() {
                                             <div className="flex items-center gap-2 text-teal-200/80">
                                                 <Calendar size={16} className="text-teal-500/70" />
                                                 {new Date(user.createdAt).toLocaleDateString('vi-VN')}
+                                            </div>
+                                        </td>
+                                        <td className="py-4 px-6">
+                                            <div className="flex items-center gap-2">
+                                                <button
+                                                    onClick={() => handleToggleStatus(user._id)}
+                                                    disabled={updatingId === user._id}
+                                                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border flex items-center gap-1.5
+                                                        ${user.isActive !== false 
+                                                            ? 'bg-teal-500/10 text-teal-400 border-teal-500/30 hover:bg-teal-500/20' 
+                                                            : 'bg-red-500/10 text-red-400 border-red-500/30 hover:bg-red-500/20'}
+                                                        ${updatingId === user._id ? 'opacity-50 cursor-wait' : ''}
+                                                    `}
+                                                    title={user.isActive !== false ? 'Nhấn để Khóa' : 'Nhấn để Kích hoạt'}
+                                                >
+                                                    <Power size={14} />
+                                                    {user.isActive !== false ? 'Hoạt động' : 'Đã khóa'}
+                                                </button>
                                             </div>
                                         </td>
                                         <td className="py-4 px-6">
