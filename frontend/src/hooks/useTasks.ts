@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { getAllToDo, getWorkspaceTasks, updateTask } from '../services/todo';
+import { getMyTimesheets } from '../services/timesheet';
 import type { Task, Status, Priority } from '../interfaces/task';
 
 export function useTasks(workspaceId?: string) {
@@ -10,7 +11,12 @@ export function useTasks(workspaceId?: string) {
     const fetchTasks = useCallback(async () => {
         try {
             setLoading(true);
-            const data = workspaceId ? await getWorkspaceTasks(workspaceId) : await getAllToDo();
+            const [data, timesheetRes] = await Promise.all([
+                workspaceId ? getWorkspaceTasks(workspaceId) : getAllToDo(),
+                workspaceId ? getMyTimesheets({ workspaceId }) : getMyTimesheets()
+            ]);
+            
+            const timesheets = timesheetRes.data || [];
 
             const convertedTasks: Task[] = data.map((item: any) => { 
                 const dateObj = new Date(item.createdAt);
@@ -41,6 +47,10 @@ export function useTasks(workspaceId?: string) {
                     } : undefined,
                     assigneeId: item.assigneeId ? item.assigneeId._id : undefined,
                     creatorId: item.creatorId,
+                    workspaceId: typeof item.workspaceId === 'object' ? item.workspaceId?._id : item.workspaceId,
+                    myTimesheet: timesheets.find((t: any) => 
+                        (typeof t.taskId === 'object' ? t.taskId._id : t.taskId) === item._id
+                    ),
                 };
             });
             setTasks(convertedTasks);

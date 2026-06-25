@@ -8,6 +8,7 @@ import RegisterPage from "../pages/auth/RegisterPage";
 import Calendar from "../pages/main/Calendar";
 import WorkspacePage from "../pages/main/WorkspacePage";
 import WorkspaceKanban from "../pages/main/WorkspaceKanban";
+import { MyTimesheetPage } from "../pages/main/MyTimesheetPage";
 import PersonnelPage from "../pages/admin/PersonnelPage";
 import ProjectPage from "../pages/admin/ProjectPage";
 import ProtectedRoute from "../components/common/ProtectedRoute";
@@ -70,6 +71,14 @@ const router = createBrowserRouter([
                 element: (
                     <ProtectedRoute requireMember={true}>
                         <WorkspaceKanban/>
+                    </ProtectedRoute>
+                )
+            },
+            {
+                path: "timesheet",
+                element: (
+                    <ProtectedRoute requireMember={true}>
+                        <MyTimesheetPage/>
                     </ProtectedRoute>
                 )
             },

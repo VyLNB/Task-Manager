@@ -13,7 +13,8 @@ import {
     // Users,
     Shield,
     LogOut,
-    File
+    File,
+    Clock
 } from "lucide-react";
 
 import { signout } from "../../services/auth";
@@ -73,6 +74,11 @@ const SideBar: React.FC<SidebarProps> = ({ isMobileOpen, setIsMobileOpen, onOpen
                 id: "workspace",
                 label: "Dự án",
                 icon: <File size={20} />
+            },
+            {
+                id: "timesheet",
+                label: "Timesheet",
+                icon: <Clock size={20} />
             }
         );
     }

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { CheckSquare, User } from 'lucide-react';
 import { KanbanBoard } from '../../components/task/KanbanBoard';
+import { WorkspaceTimesheets } from '../../components/workspace/WorkspaceTimesheets';
 import { CreateTaskModal } from '../../components/task/CreateTaskModal';
 import { InviteMemberModal } from '../../components/workspace/InviteMemberModal';
 import { useTasks } from '../../hooks/useTasks';
@@ -14,6 +15,7 @@ export default function WorkspaceKanban() {
   const { isProjectManager } = usePermission();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<'kanban' | 'timesheet'>('kanban');
 
   return (
     <div className="min-h-screen bg-[#0f1f1b] font-sans p-8">
@@ -38,13 +40,32 @@ export default function WorkspaceKanban() {
                   <User size={16} /> Mời thành viên
                 </button>
               )}
-              <button 
-                className="bg-teal-500 text-[#0f1f1b] px-5 py-2 rounded-full 
-                          font-bold text-sm flex items-center gap-2 hover:bg-teal-400 transition-colors shadow-[0_0_15px_rgba(20,184,166,0.3)] hover:shadow-[0_0_20px_rgba(20,184,166,0.5)]"
-                onClick={() => setIsModalOpen(true)}>
-                <CheckSquare size={16} /> Tạo công việc mới
-              </button>
+              {activeTab === 'kanban' && (
+                <button 
+                  className="bg-teal-500 text-[#0f1f1b] px-5 py-2 rounded-full 
+                            font-bold text-sm flex items-center gap-2 hover:bg-teal-400 transition-colors shadow-[0_0_15px_rgba(20,184,166,0.3)] hover:shadow-[0_0_20px_rgba(20,184,166,0.5)]"
+                  onClick={() => setIsModalOpen(true)}>
+                  <CheckSquare size={16} /> Tạo công việc mới
+                </button>
+              )}
             </div>
+          </div>
+
+          <div className="flex gap-4 mt-6 border-b border-teal-800/50 pb-2">
+            <button
+                className={`px-4 py-2 font-bold text-sm rounded-t-lg transition-colors ${activeTab === 'kanban' ? 'text-teal-400 border-b-2 border-teal-400 bg-teal-900/20' : 'text-teal-200/50 hover:text-teal-200'}`}
+                onClick={() => setActiveTab('kanban')}
+            >
+                Kanban Board
+            </button>
+            {isProjectManager && (
+                <button
+                    className={`px-4 py-2 font-bold text-sm rounded-t-lg transition-colors ${activeTab === 'timesheet' ? 'text-teal-400 border-b-2 border-teal-400 bg-teal-900/20' : 'text-teal-200/50 hover:text-teal-200'}`}
+                    onClick={() => setActiveTab('timesheet')}
+                >
+                    Kiểm duyệt Timesheets
+                </button>
+            )}
           </div>
         </div>
 
@@ -65,13 +86,17 @@ export default function WorkspaceKanban() {
             }}
         />
 
-        <KanbanBoard 
-            tasks={tasks} 
-            loading={loading} 
-            error={error} 
-            onUpdateTaskStatus={handleUpdateTaskStatus} 
-            onOpenCreateModal={() => setIsModalOpen(true)}
-        />
+        {activeTab === 'kanban' ? (
+            <KanbanBoard 
+                tasks={tasks} 
+                loading={loading} 
+                error={error} 
+                onUpdateTaskStatus={handleUpdateTaskStatus} 
+                onOpenCreateModal={() => setIsModalOpen(true)}
+            />
+        ) : (
+            workspaceId && <WorkspaceTimesheets workspaceId={workspaceId} />
+        )}
       </div>
     </div>
   );

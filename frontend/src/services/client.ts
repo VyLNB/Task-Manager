@@ -29,7 +29,7 @@ apiClient.interceptors.request.use(
 );
 
 export async function apiRequest<T>(
-  method: "get" | "post" | "put" | "delete",
+  method: "get" | "post" | "put" | "delete" | "patch",
   url: string,
   payload?: unknown
 ): Promise<T> {
@@ -41,15 +41,9 @@ export async function apiRequest<T>(
     });
 
     const responseData = response.data;
-    
-    // DEBUG: Log để xem response structure
-    console.log('API Response:', responseData);
 
-    // Kiểm tra nếu response có cấu trúc ApiResponse
     if (responseData && typeof responseData === 'object' && 'success' in responseData) {
       const apiResponse = responseData as ApiResponse<T>;
-      console.log('Success:', apiResponse.success);
-      console.log('Data:', apiResponse.data);
       
       if (apiResponse.success) {
         return apiResponse.data;

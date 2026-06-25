@@ -3,7 +3,9 @@ import { getAllUsers, toggleUserStatus } from "../../services/user";
 import { getAllRoles, assignRole, createRole, updateRole } from "../../services/role";
 import type { UserInterface } from "../../interfaces/user";
 import type { RoleInterface } from "../../interfaces/role";
-import { Shield, User, Mail, Calendar, Key, AlertCircle, Plus, Edit2, X, CheckCircle2, Power } from "lucide-react";
+import { getAllTimesheets } from "../../services/timesheet";
+import type { TimesheetInterface } from "../../interfaces/timesheet";
+import { Shield, User, Mail, Calendar, Key, AlertCircle, Plus, Edit2, X, CheckCircle2, Power, Clock } from "lucide-react";
 
 const AVAILABLE_PERMISSIONS = [
     { id: 'ALL', label: 'Toàn quyền hệ thống (ALL)' },
@@ -16,9 +18,10 @@ const AVAILABLE_PERMISSIONS = [
 ];
 
 export default function PersonnelPage() {
-    const [activeTab, setActiveTab] = useState<'users' | 'roles'>('users');
+    const [activeTab, setActiveTab] = useState<'users' | 'roles' | 'timesheets'>('users');
     const [users, setUsers] = useState<UserInterface[]>([]);
     const [roles, setRoles] = useState<RoleInterface[]>([]);
+    const [timesheets, setTimesheets] = useState<TimesheetInterface[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [updatingId, setUpdatingId] = useState<string | null>(null);
@@ -36,12 +39,14 @@ export default function PersonnelPage() {
     const fetchData = async () => {
         try {
             setLoading(true);
-            const [usersData, rolesData] = await Promise.all([
+            const [usersData, rolesData, timesheetsData] = await Promise.all([
                 getAllUsers(),
-                getAllRoles()
+                getAllRoles(),
+                getAllTimesheets().catch(() => ({ data: [] })) // Graceful fail if API lacks perms or error
             ]);
             setUsers(usersData);
             setRoles(rolesData);
+            setTimesheets(timesheetsData.data || []);
         } catch (err) {
             const error = err as any;
             setError(error.response?.data?.message || "Lỗi khi tải dữ liệu");
@@ -179,6 +184,14 @@ export default function PersonnelPage() {
                 >
                     Quản lý Role
                     {activeTab === 'roles' && <span className="absolute bottom-0 left-0 w-full h-0.5 bg-teal-400 rounded-t-full shadow-[0_0_8px_rgba(45,212,128,0.8)]"></span>}
+                </button>
+                <button
+                    onClick={() => setActiveTab('timesheets')}
+                    className={`pb-4 text-lg font-medium transition-colors relative flex items-center gap-2 ${activeTab === 'timesheets' ? 'text-teal-400' : 'text-teal-100/60 hover:text-teal-200'}`}
+                >
+                    <Clock size={20} />
+                    Thống kê thời gian
+                    {activeTab === 'timesheets' && <span className="absolute bottom-0 left-0 w-full h-0.5 bg-teal-400 rounded-t-full shadow-[0_0_8px_rgba(45,212,128,0.8)]"></span>}
                 </button>
             </div>
 
@@ -323,6 +336,73 @@ export default function PersonnelPage() {
                                 </div>
                             </div>
                         ))}
+                    </div>
+                </div>
+            )}
+
+            {/* TAB 3: TIMESHEET STATS */}
+            {activeTab === 'timesheets' && (
+                <div className="bg-[#1a2f2a]/60 backdrop-blur-md border border-teal-800/50 rounded-2xl overflow-hidden shadow-2xl">
+                    <div className="p-4 border-b border-teal-800/50 flex justify-between items-center bg-teal-900/20">
+                        <h2 className="text-lg font-semibold text-white">Tổng hợp thời gian làm việc (Toàn hệ thống)</h2>
+                    </div>
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left border-collapse">
+                            <thead>
+                                <tr className="bg-teal-900/40 border-b border-teal-800/50">
+                                    <th className="py-4 px-6 font-semibold text-teal-100/80">Thành viên</th>
+                                    <th className="py-4 px-6 font-semibold text-teal-100/80 text-center">Tổng thời gian đã Log</th>
+                                    <th className="py-4 px-6 font-semibold text-teal-100/80 text-center">Đã Duyệt (Approved)</th>
+                                    <th className="py-4 px-6 font-semibold text-teal-100/80 text-center">Chờ Duyệt (Pending)</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-teal-800/30">
+                                {users.map((user) => {
+                                    // Aggregate for this user
+                                    const userTimesheets = timesheets.filter(t => 
+                                        typeof t.userId === 'object' ? t.userId._id === user._id : t.userId === user._id
+                                    );
+                                    let total = 0, approved = 0, pending = 0;
+                                    userTimesheets.forEach(t => {
+                                        total += t.hours;
+                                        if (t.status === 'Approved') approved += t.hours;
+                                        if (t.status === 'Pending') pending += t.hours;
+                                    });
+
+                                    return (
+                                        <tr key={user._id} className="hover:bg-teal-800/20 transition-colors">
+                                            <td className="py-4 px-6">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-10 h-10 rounded-full bg-teal-800/50 flex items-center justify-center text-teal-300">
+                                                        <User size={20} />
+                                                    </div>
+                                                    <div>
+                                                        <div className="font-medium text-white">{user.fullName}</div>
+                                                        <div className="text-xs text-teal-200/60">{user.email}</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="py-4 px-6 text-center">
+                                                <span className="font-bold text-teal-400 text-lg">{Math.round(total * 100) / 100}h</span>
+                                            </td>
+                                            <td className="py-4 px-6 text-center">
+                                                <span className="font-bold text-green-400 text-lg">{Math.round(approved * 100) / 100}h</span>
+                                            </td>
+                                            <td className="py-4 px-6 text-center">
+                                                <span className="font-bold text-amber-400 text-lg">{Math.round(pending * 100) / 100}h</span>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
+                                {users.length === 0 && (
+                                    <tr>
+                                        <td colSpan={4} className="py-8 text-center text-teal-200/60">
+                                            Không có dữ liệu.
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             )}
