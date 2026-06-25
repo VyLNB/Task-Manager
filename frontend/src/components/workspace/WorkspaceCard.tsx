@@ -7,6 +7,7 @@ interface WorkspaceCardProps {
     leader: UserInterface;
     activeTasks?: number;
     onOpen?: (workspaceId: string) => void;
+    onStatusChange?: (workspaceId: string, newStatus: string) => void;
 }
 
 export const WorkspaceCard: React.FC<WorkspaceCardProps> = ({
@@ -15,6 +16,7 @@ export const WorkspaceCard: React.FC<WorkspaceCardProps> = ({
     leader,
     activeTasks = 0,
     onOpen,
+    onStatusChange,
 }) => {
     const allUsersMap = new Map<string, UserInterface>();
     allUsersMap.set(workspace.leader._id, workspace.leader);
@@ -47,16 +49,35 @@ export const WorkspaceCard: React.FC<WorkspaceCardProps> = ({
 
                 <div className="flex gap-2">
                     {workspace.status && (
-                        <div className={`border px-3 py-1.5 rounded-full
-                            ${workspace.status === 'Đã hoàn thành' ? 'bg-green-500/10 border-green-500/30 text-green-400' : ''}
-                            ${workspace.status === 'Đang thực hiện' ? 'bg-blue-500/10 border-blue-500/30 text-blue-400' : ''}
-                            ${workspace.status === 'Tạm dừng' ? 'bg-orange-500/10 border-orange-500/30 text-orange-400' : ''}
-                            ${workspace.status === 'Kế hoạch' ? 'bg-gray-500/10 border-gray-500/30 text-gray-400' : ''}
-                        `}>
-                            <span className="text-[11px] font-black uppercase">
-                                {workspace.status}
-                            </span>
-                        </div>
+                        onStatusChange ? (
+                            <select
+                                value={workspace.status}
+                                onChange={(e) => onStatusChange(workspace._id, e.target.value)}
+                                onClick={(e) => e.stopPropagation()}
+                                className={`border px-2 py-1 rounded-full text-[11px] font-black uppercase cursor-pointer outline-none
+                                    ${workspace.status === 'Đã hoàn thành' ? 'bg-green-500/10 border-green-500/30 text-green-400' : ''}
+                                    ${workspace.status === 'Đang thực hiện' ? 'bg-blue-500/10 border-blue-500/30 text-blue-400' : ''}
+                                    ${workspace.status === 'Tạm dừng' ? 'bg-orange-500/10 border-orange-500/30 text-orange-400' : ''}
+                                    ${workspace.status === 'Kế hoạch' ? 'bg-gray-500/10 border-gray-500/30 text-gray-400' : ''}
+                                `}
+                            >
+                                <option className="bg-[#0f1f1b] text-gray-400" value="Kế hoạch">KẾ HOẠCH</option>
+                                <option className="bg-[#0f1f1b] text-blue-400" value="Đang thực hiện">ĐANG THỰC HIỆN</option>
+                                <option className="bg-[#0f1f1b] text-green-400" value="Đã hoàn thành">ĐÃ HOÀN THÀNH</option>
+                                <option className="bg-[#0f1f1b] text-orange-400" value="Tạm dừng">TẠM DỪNG</option>
+                            </select>
+                        ) : (
+                            <div className={`border px-3 py-1.5 rounded-full
+                                ${workspace.status === 'Đã hoàn thành' ? 'bg-green-500/10 border-green-500/30 text-green-400' : ''}
+                                ${workspace.status === 'Đang thực hiện' ? 'bg-blue-500/10 border-blue-500/30 text-blue-400' : ''}
+                                ${workspace.status === 'Tạm dừng' ? 'bg-orange-500/10 border-orange-500/30 text-orange-400' : ''}
+                                ${workspace.status === 'Kế hoạch' ? 'bg-gray-500/10 border-gray-500/30 text-gray-400' : ''}
+                            `}>
+                                <span className="text-[11px] font-black uppercase">
+                                    {workspace.status}
+                                </span>
+                            </div>
+                        )
                     )}
                     <div className="bg-[#0f1f1b] border border-teal-800/50 px-3 py-1.5 rounded-full">
                         <span className="text-teal-400 text-[11px] font-black tracking-widest uppercase">

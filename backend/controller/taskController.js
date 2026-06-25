@@ -10,10 +10,7 @@ export const getAllTasks = async (req, res) => {
         const workspaceIds = userWorkspaces.map(ws => ws._id);
 
         const tasks = await TaskModel.find({
-            $or: [
-                { workspaceId: { $in: workspaceIds } },
-                { workspaceId: null, creatorId: req.userId }
-            ]
+            workspaceId: { $in: workspaceIds }
         })
         .populate('workspaceId', 'name')
         .populate('assigneeId', 'fullName email')
@@ -56,20 +53,13 @@ export const getTaskById = async (req, res) => {
             return res.status(404).json({ message: "Không tìm thấy công việc" });
         }
 
-        if (task.workspaceId) {
-            const workspace = await WorkspaceModel.findOne({
-                _id: task.workspaceId._id || task.workspaceId,
-                $or: [{ leader: req.userId }, { members: req.userId }]
-            });
+        const workspace = await WorkspaceModel.findOne({
+            _id: task.workspaceId._id || task.workspaceId,
+            $or: [{ leader: req.userId }, { members: req.userId }]
+        });
 
-            if (!workspace) {
-                return res.status(403).json({ message: "Bạn không có quyền xem công việc này" });
-            }
-        } else {
-            // Task cá nhân
-            if (task.creatorId.toString() !== req.userId) {
-                return res.status(403).json({ message: "Bạn không có quyền xem công việc cá nhân này" });
-            }
+        if (!workspace) {
+            return res.status(403).json({ message: "Bạn không có quyền xem công việc này" });
         }
 
         res.status(200).json(task);
@@ -83,22 +73,24 @@ export const createTask = async (req, res) => {
     try {
         const { workspaceId, title, description, priority, dueDate, startDate, tags, assigneeId } = req.body;
 
-        if (workspaceId) {
-            const workspace = await WorkspaceModel.findOne({
-                _id: workspaceId,
-                $or: [{ leader: req.userId }, { members: req.userId }]
-            });
+        if (!workspaceId) {
+            return res.status(400).json({ message: "workspaceId là bắt buộc" });
+        }
 
-            if (!workspace) {
-                return res.status(403).json({ message: "Bạn không có quyền tạo công việc trong workspace này" });
-            }
+        const workspace = await WorkspaceModel.findOne({
+            _id: workspaceId,
+            $or: [{ leader: req.userId }, { members: req.userId }]
+        });
+
+        if (!workspace) {
+            return res.status(403).json({ message: "Bạn không có quyền tạo công việc trong workspace này" });
         }
 
         const newTask = new TaskModel({
             title,
             description,
             creatorId: req.userId,
-            workspaceId: workspaceId || null,
+            workspaceId,
             priority,
             dueDate,
             startDate,
@@ -124,29 +116,22 @@ export const updateTask = async (req, res) => {
             return res.status(404).json({ message: "Không tìm thấy công việc" });
         }
 
-        if (task.workspaceId) {
-            const workspace = await WorkspaceModel.findOne({
-                _id: task.workspaceId,
-                $or: [{ leader: req.userId }, { members: req.userId }]
-            });
+        const workspace = await WorkspaceModel.findOne({
+            _id: task.workspaceId,
+            $or: [{ leader: req.userId }, { members: req.userId }]
+        });
 
-            if (!workspace) {
-                return res.status(403).json({ message: "Bạn không có quyền truy cập công việc này" });
-            }
+        if (!workspace) {
+            return res.status(403).json({ message: "Bạn không có quyền truy cập công việc này" });
+        }
 
-            // Check if user is Assignee, Creator, or Workspace Leader
-            const isAssignee = task.assigneeId && task.assigneeId.toString() === req.userId;
-            const isCreator = task.creatorId && task.creatorId.toString() === req.userId;
-            const isLeader = workspace.leader && workspace.leader.toString() === req.userId;
+        // Check if user is Assignee, Creator, or Workspace Leader
+        const isAssignee = task.assigneeId && task.assigneeId.toString() === req.userId;
+        const isCreator = task.creatorId && task.creatorId.toString() === req.userId;
+        const isLeader = workspace.leader && workspace.leader.toString() === req.userId;
 
-            if (!isAssignee && !isCreator && !isLeader) {
-                return res.status(403).json({ message: "Chỉ người được giao việc hoặc Quản lý dự án mới có quyền cập nhật công việc này" });
-            }
-        } else {
-            // Task cá nhân
-            if (task.creatorId.toString() !== req.userId) {
-                return res.status(403).json({ message: "Bạn không có quyền cập nhật công việc cá nhân này" });
-            }
+        if (!isAssignee && !isCreator && !isLeader) {
+            return res.status(403).json({ message: "Chỉ người được giao việc hoặc Quản lý dự án mới có quyền cập nhật công việc này" });
         }
 
         const updatedData = {};

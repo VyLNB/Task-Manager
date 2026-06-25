@@ -36,7 +36,7 @@ const ToDoForm: React.FC<TaskDetailProps> = ({
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [deadline, setDeadline] = useState('');
-  const [priority, setPriority] = useState('');
+  const [priority, setPriority] = useState('MEDIUM');
   const [tags, setTags] = useState<string[]>([]);
   const [workspaceId, setWorkspaceId] = useState<string>('');
   const [assigneeId, setAssigneeId] = useState<string>('');
@@ -49,7 +49,7 @@ const ToDoForm: React.FC<TaskDetailProps> = ({
       setTitle(initialData.title || '');
       setDescription(initialData.description || '');
       setDeadline(initialData.deadline || '');
-      setPriority(initialData.priority || '');
+      setPriority(initialData.priority || 'MEDIUM');
       setTags(initialData.tags || []);
       setWorkspaceId(initialData.workspaceId || initialWorkspaceId || '');
       setAssigneeId(initialData.assigneeId || '');
@@ -58,7 +58,7 @@ const ToDoForm: React.FC<TaskDetailProps> = ({
       setTitle('');
       setDescription('');
       setDeadline('');
-      setPriority('');
+      setPriority('MEDIUM');
       setTags([]);
       setWorkspaceId(initialWorkspaceId || '');
       setAssigneeId('');
@@ -130,7 +130,7 @@ const ToDoForm: React.FC<TaskDetailProps> = ({
             className="w-full px-3 py-2 border border-teal-700 rounded-md focus:outline-none 
                         focus:ring-1 focus:ring-teal-500 focus:border-teal-500 text-white bg-[#0f1f1b] disabled:opacity-60"
           >
-            <option value="">-- Công việc cá nhân --</option>
+            <option value="" disabled>-- Chọn Workspace --</option>
             {workspaces.map(ws => (
               <option key={ws._id} value={ws._id}>{ws.name}</option>
             ))}
@@ -185,6 +185,23 @@ const ToDoForm: React.FC<TaskDetailProps> = ({
             className="w-full px-3 py-2 border border-teal-700 bg-[#0f1f1b] rounded-md focus:outline-none 
                       focus:ring-1 focus:ring-teal-500 focus:border-teal-500 resize-none text-white"
           />
+        </div>
+
+        {/* Priority */}
+        <div>
+          <label className="block text-sm font-medium text-white mb-2">
+            Mức độ ưu tiên
+          </label>
+          <select
+            value={priority}
+            onChange={(e) => setPriority(e.target.value)}
+            className="w-full px-3 py-2 border border-teal-700 rounded-md focus:outline-none 
+                        focus:ring-1 focus:ring-teal-500 focus:border-teal-500 text-white bg-[#0f1f1b]"
+          >
+            <option value="LOW">Thấp (LOW)</option>
+            <option value="MEDIUM">Trung bình (MEDIUM)</option>
+            <option value="HIGH">Cao (HIGH)</option>
+          </select>
         </div>
 
         {/* Buttons */}

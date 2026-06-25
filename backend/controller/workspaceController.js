@@ -139,3 +139,33 @@ export const getAllWorkspacesAdmin = async (req, res) => {
         });
     }
 }
+
+export const updateWorkspaceStatus = async (req, res) => {
+    try {
+        const { workspaceId } = req.params;
+        const { status } = req.body;
+        const currentUserId = req.userId;
+
+        const workspace = await WorkspaceModel.findById(workspaceId);
+        if (!workspace) {
+            return res.status(404).json({ message: 'Not found workspace' });
+        }
+
+        if (workspace.leader.toString() !== currentUserId) {
+            return res.status(403).json({ message: 'Only the Project Manager (Leader) can update the status' });
+        }
+
+        workspace.status = status;
+        await workspace.save();
+
+        res.status(200).json({
+            message: "Cập nhật trạng thái thành công",
+            data: workspace
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: "Lỗi khi cập nhật trạng thái",
+            error: error.message
+        });
+    }
+}

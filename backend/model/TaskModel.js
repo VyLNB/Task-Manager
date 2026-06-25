@@ -23,9 +23,8 @@ const TaskSchema = new mongoose.Schema(
         workspaceId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'workspaces',
-            required: false,
-            default: null,
-            description: "Task này thuộc về Nhóm/Dự án nào (nếu để trống là cá nhân)"
+            required: true,
+            description: "Task này thuộc về Nhóm/Dự án nào"
         },
         creatorId: {
             type: mongoose.Schema.Types.ObjectId,

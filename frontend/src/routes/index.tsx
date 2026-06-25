@@ -8,8 +8,8 @@ import RegisterPage from "../pages/auth/RegisterPage";
 import Calendar from "../pages/main/Calendar";
 import WorkspacePage from "../pages/main/WorkspacePage";
 import WorkspaceKanban from "../pages/main/WorkspaceKanban";
-import PersonnelPage from "../pages/main/PersonnelPage";
-import ProjectPage from "../pages/main/ProjectPage";
+import PersonnelPage from "../pages/admin/PersonnelPage";
+import ProjectPage from "../pages/admin/ProjectPage";
 import ProtectedRoute from "../components/common/ProtectedRoute";
 
 

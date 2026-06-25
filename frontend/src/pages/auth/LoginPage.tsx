@@ -77,7 +77,7 @@ const LoginPage: React.FC = () => {
 
         <h1 className="text-white text-3xl font-bold text-center mb-8">Đăng nhập</h1>
 
-        <div>
+        <form onSubmit={handleSubmit}>
           {/* Email Input */}
           <InputField
             label="Email"
@@ -104,12 +104,12 @@ const LoginPage: React.FC = () => {
 
           {/* Sign In Button */}
           <button
-            onClick={handleSubmit}
+            type="submit"
             className="w-full bg-teal-500 hover:bg-teal-400 text-[#0f1f1b] font-bold py-3 rounded-lg transition shadow-[0_0_15px_rgba(20,184,166,0.3)] hover:shadow-[0_0_20px_rgba(20,184,166,0.5)]"
           >
             Đăng nhập
           </button>
-        </div>
+        </form>
 
         {/* Divider */}
         <div className="flex items-center my-6">

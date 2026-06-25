@@ -7,9 +7,10 @@ interface KanbanBoardProps {
     loading?: boolean;
     error?: string | null;
     onUpdateTaskStatus: (newStatus: Status, taskId: string) => void;
+    onOpenCreateModal?: () => void;
 }
 
-export const KanbanBoard: React.FC<KanbanBoardProps> = ({ tasks, loading, error, onUpdateTaskStatus }) => {
+export const KanbanBoard: React.FC<KanbanBoardProps> = ({ tasks, loading, error, onUpdateTaskStatus, onOpenCreateModal }) => {
     
     const handleDragStart = (e: React.DragEvent, id: string) => {
         e.dataTransfer.setData('text/plain', id);
@@ -27,6 +28,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ tasks, loading, error,
                     tasks={tasks.filter((t) => t.status === 'TO DO')}
                     onDragStart={handleDragStart}
                     onDrop={onUpdateTaskStatus} 
+                    onOpenCreateModal={onOpenCreateModal}
                 />
                 <KanbanColumn
                     status="IN PROGRESS"

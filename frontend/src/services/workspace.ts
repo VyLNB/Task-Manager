@@ -24,3 +24,7 @@ export async function inviteMember(
 export async function getAllProjectsAdmin(): Promise<{ message: string, data: WorkspaceInterface[] }> {
     return apiRequest<{ message: string, data: WorkspaceInterface[] }>("get", "/workspaces/all");
 }
+
+export async function updateWorkspaceStatus(workspaceId: string, status: string): Promise<{ message: string, data: WorkspaceInterface }> {
+    return apiRequest<{ message: string, data: WorkspaceInterface }>("put", `/workspaces/${workspaceId}/status`, { status });
+}

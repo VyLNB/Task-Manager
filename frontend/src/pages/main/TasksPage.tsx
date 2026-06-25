@@ -51,6 +51,7 @@ export default function TaskPage() {
           loading={loading}
           error={error}
           onUpdateTaskStatus={handleUpdateTaskStatus}
+          onOpenCreateModal={() => setIsModalOpen(true)}
         />
       </div>
     </div>

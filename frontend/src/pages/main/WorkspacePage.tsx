@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import type { WorkspaceInterface } from '../../interfaces/workspace';
-import { getWorkspaces, createWorkspace } from '../../services/workspace';
+import { getWorkspaces, createWorkspace, updateWorkspaceStatus } from '../../services/workspace';
 import { Users, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { WorkspaceCard } from '../../components/workspace/WorkspaceCard';
@@ -56,6 +56,18 @@ const WorkspacePage = () => {
         }
     };
 
+    const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+    const currentUserId = currentUser?.user?.id;
+
+    const handleStatusChange = async (workspaceId: string, newStatus: string) => {
+        try {
+            await updateWorkspaceStatus(workspaceId, newStatus);
+            setWorkspaces(workspaces.map(ws => ws._id === workspaceId ? { ...ws, status: newStatus as WorkspaceInterface['status'] } : ws));
+        } catch (err: any) {
+            setError(err.message || 'Lỗi khi cập nhật trạng thái');
+        }
+    };
+
     return (
         <div className="p-8 max-w-[1400px] mx-auto min-h-screen">
             <div className="mb-10">
@@ -64,7 +76,7 @@ const WorkspacePage = () => {
                     Workspaces
                 </h1>
                 <p className="text-teal-200/60 text-lg ml-12">
-                    Nơi bạn có thể làm việc nhóm hiệu quả hơn
+                    Nơi bạn có thể làm việc nhóm và quản lý dự án hiệu quả hơn
                 </p>
             </div>
 
@@ -94,7 +106,7 @@ const WorkspacePage = () => {
                                     <Plus size={32} strokeWidth={3} />
                                 </div>
                                 <h3 className="text-teal-200/60 group-hover:text-teal-400 font-bold text-xl transition-colors">
-                                    Tạo workspace mới
+                                    Tạo dự án mới
                                 </h3>
                             </>
                         ) : (
@@ -189,6 +201,7 @@ const WorkspacePage = () => {
                             leader={ws.leader}
                             onOpen={(id) => navigate(`/todoapp/workspace/${id}`)}
                             category="WORKSPACE"
+                            onStatusChange={ws.leader._id === currentUserId ? handleStatusChange : undefined}
                         />
                     ))}
                 </div>

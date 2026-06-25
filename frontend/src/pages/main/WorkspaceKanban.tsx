@@ -70,6 +70,7 @@ export default function WorkspaceKanban() {
             loading={loading} 
             error={error} 
             onUpdateTaskStatus={handleUpdateTaskStatus} 
+            onOpenCreateModal={() => setIsModalOpen(true)}
         />
       </div>
     </div>

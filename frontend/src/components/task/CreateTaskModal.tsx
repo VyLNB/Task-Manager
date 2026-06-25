@@ -32,7 +32,8 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ isOpen, onClos
                 description: formData.description,
                 status: 'TO DO',
                 workspaceId: formData.workspaceId || workspaceId,
-                assigneeId: formData.assigneeId
+                assigneeId: formData.assigneeId,
+                priority: formData.priority
             };
             await createTask(payload);
             onSuccess();

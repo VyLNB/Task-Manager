@@ -9,8 +9,8 @@ import {
     GraduationCap,
     // Calendar,
     UserCircle,
-    LayersPlus,
-    Users,
+    // LayersPlus,
+    // Users,
     Shield,
     LogOut,
     File
@@ -64,15 +64,15 @@ const SideBar: React.FC<SidebarProps> = ({ isMobileOpen, setIsMobileOpen, onOpen
                 label: "Công việc của tôi",
                 icon: <List size={20} />,
             },
-            {
-                id: "newTask",
-                label: "Tạo mới",
-                icon: <LayersPlus size={20} />
-            },
+            // {
+            //     id: "newTask",
+            //     label: "Tạo mới",
+            //     icon: <LayersPlus size={20} />
+            // },
             {
                 id: "workspace",
                 label: "Dự án",
-                icon: <Users size={20} />
+                icon: <File size={20} />
             }
         );
     }

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { getAllToDo, getWorkspaceTasks, updateTask } from '../services/todo';
-import type { Task, Status } from '../interfaces/task';
+import type { Task, Status, Priority } from '../interfaces/task';
 
 export function useTasks(workspaceId?: string) {
     const [tasks, setTasks] = useState<Task[]>([]);
@@ -21,20 +21,16 @@ export function useTasks(workspaceId?: string) {
                    currentStatus = item.completed ? 'COMPLETED' : 'TO DO';
                 }
 
-                let tagName = 'CÁ NHÂN';
-                if (item.workspaceId) {
-                    if (typeof item.workspaceId === 'object' && item.workspaceId.name) {
-                        tagName = item.workspaceId.name.toUpperCase();
-                    } else {
-                        tagName = 'WORKSPACE';
-                    }
+                let tagName = 'WORKSPACE';
+                if (item.workspaceId && typeof item.workspaceId === 'object' && item.workspaceId.name) {
+                    tagName = item.workspaceId.name.toUpperCase();
                 }
 
                 return {
                     id: item._id,
                     title: item.title,
                     status: currentStatus, 
-                    priority: 'MEDIUM PRIORITY', 
+                    priority: (item.priority ? `${item.priority} PRIORITY` : 'MEDIUM PRIORITY') as Priority, 
                     date: formattedDate,
                     tags: [tagName], 
                     completedSubtasks: currentStatus === 'COMPLETED' ? 1 : 0,

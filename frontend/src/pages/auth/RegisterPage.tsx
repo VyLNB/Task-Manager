@@ -78,7 +78,7 @@ const RegisterPage: React.FC = () => {
 
                 <h1 className="text-white text-2xl font-bold text-center mb-4">Đăng ký</h1>
 
-                <div>
+                <form onSubmit={handleSubmit}>
                     {/* Username Input */}
                     <div className="mb-3">
                         <label className="block text-white text-xs font-medium mb-1">
@@ -137,12 +137,12 @@ const RegisterPage: React.FC = () => {
 
                     {/* Sign Up Button */}
                     <button
-                        onClick={handleSubmit}
+                        type="submit"
                         className="w-full bg-teal-500 hover:bg-teal-400 text-[#0f1f1b] font-bold py-2.5 text-sm rounded-lg transition shadow-[0_0_15px_rgba(20,184,166,0.3)] hover:shadow-[0_0_20px_rgba(20,184,166,0.5)]"
                     >
                         Đăng ký
                     </button>
-                </div>
+                </form>
 
                 {/* Divider */}
                 <div className="flex items-center my-4">
