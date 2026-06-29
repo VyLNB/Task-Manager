@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { getAllUsers, toggleUserStatus } from "../../services/user";
-import { getAllRoles, assignRole, createRole, updateRole } from "../../services/role";
-import type { UserInterface } from "../../interfaces/user";
-import type { RoleInterface } from "../../interfaces/role";
-import { getAllTimesheets } from "../../services/timesheet";
-import type { TimesheetInterface } from "../../interfaces/timesheet";
+import { getAllUsers, toggleUserStatus } from "../../../services/user";
+import { getAllRoles, assignRole, createRole, updateRole } from "../../../services/role";
+import type { UserInterface } from "../../../interfaces/user";
+import type { RoleInterface } from "../../../interfaces/role";
+import { getAllTimesheets } from "../../../services/timesheet";
+import type { TimesheetInterface } from "../../../interfaces/timesheet";
 import { Shield, User, Mail, Calendar, Key, AlertCircle, Plus, Edit2, X, CheckCircle2, Power, Clock } from "lucide-react";
 
 const AVAILABLE_PERMISSIONS = [

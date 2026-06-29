@@ -88,7 +88,7 @@ const SideBar: React.FC<SidebarProps> = ({ isMobileOpen, setIsMobileOpen, onOpen
             id: "me",
             label: "Tài khoản",
             icon: <UserCircle size={20} />,
-            path: "/todoapp/me"
+            path: "/main/me"
         },
     ];
 
@@ -97,13 +97,13 @@ const SideBar: React.FC<SidebarProps> = ({ isMobileOpen, setIsMobileOpen, onOpen
             id: "personnel",
             label: "Nhân sự",
             icon: <Shield size={20} />,
-            path: "/todoapp/personnel"
+            path: "/main/personnel"
         },
         {
             id: "project",
             label: "Dự án",
             icon: <File/>,
-            path: "/todoapp/project"
+            path: "/main/project"
         }
         );
 
@@ -224,7 +224,7 @@ const SideBar: React.FC<SidebarProps> = ({ isMobileOpen, setIsMobileOpen, onOpen
                                             {item.subItem.map((sub) => (
                                                 <NavLink
                                                     key={sub.id}
-                                                    to={`/todoapp/${sub.id}`}
+                                                    to={`/main/${sub.id}`}
                                                     onClick={closeMobileSidebar}
                                                     className={({ isActive }) =>
                                                         `block pl-11 pr-3 py-2 text-sm rounded-md transition-colors truncate
@@ -262,8 +262,8 @@ const SideBar: React.FC<SidebarProps> = ({ isMobileOpen, setIsMobileOpen, onOpen
                                 <NavLink
                                     to={
                                         item.id === "dashboard"
-                                            ? "/todoapp/dashboard"
-                                            : `/todoapp/${item.id}`
+                                            ? "/main/dashboard"
+                                            : `/main/${item.id}`
                                     }
                                     end={item.id === "dashboard"}
                                     onClick={closeMobileSidebar}
@@ -299,7 +299,7 @@ const SideBar: React.FC<SidebarProps> = ({ isMobileOpen, setIsMobileOpen, onOpen
                     {otherItems.map((item) => (
                         <NavLink
                             key={item.id}
-                            to={item.path || `/todoapp/${item.id}`}
+                            to={item.path || `/main/${item.id}`}
                             onClick={closeMobileSidebar}
                             className={({ isActive }) =>
                                 `flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200

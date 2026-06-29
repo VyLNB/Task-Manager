@@ -118,12 +118,12 @@ export const TaskCard = ({
         <div className="flex gap-2">
           {canEdit ? (
             <button className="flex-[2] bg-teal-500/10 text-teal-400 border border-teal-500/30 py-2 rounded-xl font-bold text-xs flex items-center justify-center gap-2 hover:bg-teal-500 hover:text-[#0f1f1b] transition-colors"
-              onClick={() => navigate(`/todoapp/tasks/${task.id}`)}>
+              onClick={() => navigate(`/main/tasks/${task.id}`)}>
               <Edit size={14} /> Chỉnh sửa / Chi tiết
             </button>
           ) : (
             <button className="flex-[2] bg-gray-500/10 text-gray-400 border border-gray-500/30 py-2 rounded-xl font-bold text-xs flex items-center justify-center gap-2 hover:bg-gray-600/30 transition-colors"
-              onClick={() => navigate(`/todoapp/tasks/${task.id}`)}>
+              onClick={() => navigate(`/main/tasks/${task.id}`)}>
               Chi tiết
             </button>
           )}
@@ -133,13 +133,13 @@ export const TaskCard = ({
               className={`flex-1 py-2 rounded-xl font-bold text-xs flex items-center justify-center transition-colors ${
                 task.myTimesheet 
                   ? 'bg-teal-500 text-[#0f1f1b] hover:bg-teal-400' 
-                  : 'bg-amber-500/10 text-amber-400 border border-amber-500/30 hover:bg-amber-500 hover:text-[#0f1f1b]'
+                  : (isPM && task.hasAnyTimesheet ? 'bg-teal-700/50 text-teal-200 border border-teal-500/50 hover:bg-teal-600/50' : 'bg-amber-500/10 text-amber-400 border border-amber-500/30 hover:bg-amber-500 hover:text-[#0f1f1b]')
               }`}
               onClick={() => setIsLogTimeOpen(true)}
-              title={task.myTimesheet ? "Xem/Sửa Timesheet" : "Log Time"}
+              title={task.myTimesheet ? "Xem/Sửa Timesheet của bạn" : (isPM && task.hasAnyTimesheet ? "Member Đã Log - Bấm để log thêm của bạn" : "Log Time")}
             >
               <Clock size={16} />
-              {task.myTimesheet && <span className="ml-1">Đã Log</span>}
+              {task.myTimesheet ? <span className="ml-1">Đã Log</span> : (isPM && task.hasAnyTimesheet ? <span className="ml-1">Member Đã Log</span> : <span className="ml-1">Log Time</span>)}
             </button>
           )}
         </div>
@@ -154,6 +154,7 @@ export const TaskCard = ({
             onSuccess={() => {
                 // Optional: show toast notification
                 setIsLogTimeOpen(false);
+                window.dispatchEvent(new Event('task_updated'));
             }}
         />
       )}

@@ -44,7 +44,7 @@ export default function MainLayout() {
                 isOpen={isCreateTaskModalOpen} 
                 onClose={() => setIsCreateTaskModalOpen(false)} 
                 onSuccess={() => {
-                    navigate('/todoapp/tasks');
+                    navigate('/main/tasks');
                     window.dispatchEvent(new Event('task_created'));
                 }} 
             />

@@ -35,7 +35,27 @@ export const MyTimesheetPage: React.FC = () => {
         }
     };
 
-    const totalHours = timesheets.reduce((acc, curr) => acc + (curr.status !== 'Rejected' ? curr.hours : 0), 0);
+
+    const groupedTimesheets = timesheets.reduce((acc, curr) => {
+        const dateStr = new Date(curr.date).toLocaleDateString('vi-VN');
+        if (!acc[dateStr]) {
+            acc[dateStr] = {
+                date: curr.date,
+                timesheets: [],
+                totalHours: 0
+            };
+        }
+        acc[dateStr].timesheets.push(curr);
+        if (curr.status !== 'Rejected') {
+            acc[dateStr].totalHours += curr.hours;
+        }
+        return acc;
+    }, {} as Record<string, { date: string | Date, timesheets: TimesheetInterface[], totalHours: number }>);
+
+    const sortedDates = Object.keys(groupedTimesheets).sort((a, b) => new Date(groupedTimesheets[b].date).getTime() - new Date(groupedTimesheets[a].date).getTime());
+
+    const todayStr = new Date().toLocaleDateString('vi-VN');
+    const todayTotalHours = groupedTimesheets[todayStr]?.totalHours || 0;
 
     return (
         <div className="p-8 max-w-[1200px] mx-auto min-h-screen">
@@ -54,8 +74,8 @@ export const MyTimesheetPage: React.FC = () => {
                         Σ
                     </div>
                     <div>
-                        <p className="text-teal-200/60 text-xs font-bold uppercase">Tổng thời gian (Hợp lệ)</p>
-                        <p className="text-white text-2xl font-black">{totalHours.toFixed(1)} <span className="text-sm text-gray-400 font-medium">Giờ</span></p>
+                        <p className="text-teal-200/60 text-xs font-bold uppercase">Tổng thời gian (Hôm nay)</p>
+                        <p className="text-white text-2xl font-black">{todayTotalHours.toFixed(1)} <span className="text-sm text-gray-400 font-medium">Giờ</span></p>
                     </div>
                 </div>
             </div>
@@ -81,7 +101,7 @@ export const MyTimesheetPage: React.FC = () => {
                         <table className="w-full text-left border-collapse">
                             <thead>
                                 <tr className="border-b border-teal-800/50 bg-[#0f1f1b]/50">
-                                    <th className="p-4 text-teal-200/60 font-bold text-sm uppercase">Ngày</th>
+                                    <th className="p-4 text-teal-200/60 font-bold text-sm uppercase">Workspace</th>
                                     <th className="p-4 text-teal-200/60 font-bold text-sm uppercase">Công việc</th>
                                     <th className="p-4 text-teal-200/60 font-bold text-sm uppercase">Thời gian</th>
                                     <th className="p-4 text-teal-200/60 font-bold text-sm uppercase">Chi tiết / Kết quả</th>
@@ -90,82 +110,98 @@ export const MyTimesheetPage: React.FC = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {timesheets.map((t) => (
-                                    <tr key={t._id} className="border-b border-teal-800/30 hover:bg-[#0f1f1b]/30 transition-colors">
-                                        <td className="p-4 align-top">
-                                            <div className="flex items-center gap-2 text-white font-medium">
-                                                <Calendar size={14} className="text-teal-500" />
-                                                {new Date(t.date).toLocaleDateString('vi-VN')}
-                                            </div>
-                                            <div className="text-xs text-teal-200/50 mt-1">
-                                                {t.workspaceId?.name || 'Workspace'}
-                                            </div>
-                                        </td>
-                                        <td className="p-4 align-top">
-                                            <p className="text-teal-100 font-semibold line-clamp-2">{t.taskId?.title || 'Unknown Task'}</p>
-                                        </td>
-                                        <td className="p-4 align-top">
-                                            <div className="flex items-center gap-2">
-                                                <span className="bg-teal-900/40 text-teal-400 px-2 py-1 rounded text-xs font-bold font-mono">
-                                                    {t.startTime}
-                                                </span>
-                                                <span className="text-gray-500">-</span>
-                                                <span className="bg-teal-900/40 text-teal-400 px-2 py-1 rounded text-xs font-bold font-mono">
-                                                    {t.endTime}
-                                                </span>
-                                            </div>
-                                            <div className="text-xs text-amber-400/80 font-bold mt-1">
-                                                {t.hours} Giờ
-                                            </div>
-                                        </td>
-                                        <td className="p-4 align-top">
-                                            <div className="text-sm text-gray-300 mb-1 line-clamp-2">
-                                                <FileText size={12} className="inline mr-1 text-gray-500" />
-                                                {t.description}
-                                            </div>
-                                            {t.result && (
-                                                <div className="text-xs text-teal-200/70 truncate bg-teal-900/20 px-2 py-1 rounded">
-                                                    <span className="font-semibold mr-1">KQ:</span> {t.result}
-                                                </div>
-                                            )}
-                                        </td>
-                                        <td className="p-4 align-top">
-                                            {t.status === 'Approved' && (
-                                                <span className="inline-flex items-center gap-1 bg-green-500/10 text-green-400 border border-green-500/30 px-2.5 py-1 rounded-full text-xs font-bold">
-                                                    <CheckCircle2 size={12} /> Approved
-                                                </span>
-                                            )}
-                                            {t.status === 'Pending' && (
-                                                <span className="inline-flex items-center gap-1 bg-orange-500/10 text-orange-400 border border-orange-500/30 px-2.5 py-1 rounded-full text-xs font-bold">
-                                                    <Clock size={12} /> Pending
-                                                </span>
-                                            )}
-                                            {t.status === 'Rejected' && (
-                                                <div className="flex flex-col gap-1">
-                                                    <span className="inline-flex items-center gap-1 w-fit bg-red-500/10 text-red-400 border border-red-500/30 px-2.5 py-1 rounded-full text-xs font-bold">
-                                                        <XCircle size={12} /> Rejected
-                                                    </span>
-                                                    {t.pmComment && (
-                                                        <span className="text-[10px] text-red-400/70 bg-red-900/20 p-1.5 rounded line-clamp-2">
-                                                            {t.pmComment}
-                                                        </span>
-                                                    )}
-                                                </div>
-                                            )}
-                                        </td>
-                                        <td className="p-4 align-top text-center">
-                                            {t.status === 'Pending' && (
-                                                <button 
-                                                    onClick={() => handleDelete(t._id)}
-                                                    className="text-gray-500 hover:text-red-400 transition-colors p-2 hover:bg-red-500/10 rounded-lg"
-                                                    title="Xóa"
-                                                >
-                                                    <Trash2 size={16} />
-                                                </button>
-                                            )}
-                                        </td>
-                                    </tr>
-                                ))}
+                                {sortedDates.map(dateStr => {
+                                    const group = groupedTimesheets[dateStr];
+                                    return (
+                                        <React.Fragment key={dateStr}>
+                                            <tr className="bg-[#1a2f2a]/80 border-b border-teal-800/50">
+                                                <td colSpan={6} className="p-4">
+                                                    <div className="flex justify-between items-center">
+                                                        <div className="font-bold text-teal-300 text-lg flex items-center gap-2">
+                                                            <Calendar size={18} />
+                                                            Ngày: {dateStr}
+                                                        </div>
+                                                        <div className="text-amber-400 font-bold bg-amber-900/30 px-3 py-1 rounded-lg border border-amber-500/20">
+                                                            Tổng thời gian: {group.totalHours.toFixed(1)} Giờ
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            {group.timesheets.map((t) => (
+                                                <tr key={t._id} className="border-b border-teal-800/30 hover:bg-[#0f1f1b]/30 transition-colors">
+                                                    <td className="p-4 align-top">
+                                                        <div className="text-sm font-medium text-teal-100">
+                                                            {t.workspaceId?.name || 'Workspace'}
+                                                        </div>
+                                                    </td>
+                                                    <td className="p-4 align-top">
+                                                        <p className="text-teal-100 font-semibold line-clamp-2">{t.taskId?.title || 'Unknown Task'}</p>
+                                                    </td>
+                                                    <td className="p-4 align-top">
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="bg-teal-900/40 text-teal-400 px-2 py-1 rounded text-xs font-bold font-mono">
+                                                                {t.startTime}
+                                                            </span>
+                                                            <span className="text-gray-500">-</span>
+                                                            <span className="bg-teal-900/40 text-teal-400 px-2 py-1 rounded text-xs font-bold font-mono">
+                                                                {t.endTime}
+                                                            </span>
+                                                        </div>
+                                                        <div className="text-xs text-amber-400/80 font-bold mt-1">
+                                                            {t.hours} Giờ
+                                                        </div>
+                                                    </td>
+                                                    <td className="p-4 align-top">
+                                                        <div className="text-sm text-gray-300 mb-1 line-clamp-2">
+                                                            <FileText size={12} className="inline mr-1 text-gray-500" />
+                                                            {t.description}
+                                                        </div>
+                                                        {t.result && (
+                                                            <div className="text-xs text-teal-200/70 truncate bg-teal-900/20 px-2 py-1 rounded">
+                                                                <span className="font-semibold mr-1">KQ:</span> {t.result}
+                                                            </div>
+                                                        )}
+                                                    </td>
+                                                    <td className="p-4 align-top">
+                                                        {t.status === 'Approved' && (
+                                                            <span className="inline-flex items-center gap-1 bg-green-500/10 text-green-400 border border-green-500/30 px-2.5 py-1 rounded-full text-xs font-bold">
+                                                                <CheckCircle2 size={12} /> Approved
+                                                            </span>
+                                                        )}
+                                                        {t.status === 'Pending' && (
+                                                            <span className="inline-flex items-center gap-1 bg-orange-500/10 text-orange-400 border border-orange-500/30 px-2.5 py-1 rounded-full text-xs font-bold">
+                                                                <Clock size={12} /> Pending
+                                                            </span>
+                                                        )}
+                                                        {t.status === 'Rejected' && (
+                                                            <div className="flex flex-col gap-1">
+                                                                <span className="inline-flex items-center gap-1 w-fit bg-red-500/10 text-red-400 border border-red-500/30 px-2.5 py-1 rounded-full text-xs font-bold">
+                                                                    <XCircle size={12} /> Rejected
+                                                                </span>
+                                                                {t.pmComment && (
+                                                                    <span className="text-[10px] text-red-400/70 bg-red-900/20 p-1.5 rounded line-clamp-2">
+                                                                        {t.pmComment}
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                        )}
+                                                    </td>
+                                                    <td className="p-4 align-top text-center">
+                                                        {t.status === 'Pending' && (
+                                                            <button 
+                                                                onClick={() => handleDelete(t._id)}
+                                                                className="text-gray-500 hover:text-red-400 transition-colors p-2 hover:bg-red-500/10 rounded-lg"
+                                                                title="Xóa"
+                                                            >
+                                                                <Trash2 size={16} />
+                                                            </button>
+                                                        )}
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </React.Fragment>
+                                    );
+                                })}
                             </tbody>
                         </table>
                     </div>

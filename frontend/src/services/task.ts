@@ -1,5 +1,5 @@
-// api/todo.ts
 import { apiRequest } from "./client";
+
 import type { ToDoItemInterface, ToDoItemFormData } from "../interfaces/todo";
 
 export async function getAllToDo(): Promise<ToDoItemInterface[]> {

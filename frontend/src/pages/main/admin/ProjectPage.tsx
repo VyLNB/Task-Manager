@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { getAllProjectsAdmin } from '../../services/workspace';
-import type { WorkspaceInterface } from '../../interfaces/workspace';
+import { getAllProjectsAdmin } from '../../../services/workspace';
+import type { WorkspaceInterface } from '../../../interfaces/workspace';
 import { Users, FileText, CalendarDays, Loader2, X, Clock } from 'lucide-react';
-import { WorkspaceTimesheets } from '../../components/workspace/WorkspaceTimesheets';
+import { WorkspaceTimesheets } from '../../../components/workspace/WorkspaceTimesheets';
 
 const ProjectPage: React.FC = () => {
     const [projects, setProjects] = useState<WorkspaceInterface[]>([]);

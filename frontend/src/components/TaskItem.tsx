@@ -32,7 +32,7 @@ const ToDoItem: React.FC<TodoItemProps> = ({ todo, onToggle }) => {
 
             <div className="flex-1 min-w-0">
                 
-                <NavLink to={`/todoapp/tasks/${todo.id}`}>
+                <NavLink to={`/main/tasks/${todo.id}`}>
                     <h3 className={`text-sm font-medium ${todo.status === 'completed' ? 'line-through text-white' : 'text-white'}`}>
                         {todo.title}
                     </h3>

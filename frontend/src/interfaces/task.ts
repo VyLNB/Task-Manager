@@ -19,4 +19,5 @@ export interface Task {
   creatorId?: string;
   workspaceId?: string;
   myTimesheet?: any;
+  hasAnyTimesheet?: boolean;
 }

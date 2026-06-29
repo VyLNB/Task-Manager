@@ -30,6 +30,8 @@ export const createTimesheet = async (req, res) => {
             return res.status(404).json({ message: "Task không tồn tại" });
         }
 
+        const isLeader = workspace.leader.toString() === userId;
+
         const newTimesheet = new TimesheetModel({
             taskId,
             userId,
@@ -40,7 +42,7 @@ export const createTimesheet = async (req, res) => {
             hours,
             description,
             result,
-            status: 'Pending'
+            status: isLeader ? 'Approved' : 'Pending'
         });
 
         const savedTimesheet = await newTimesheet.save();
