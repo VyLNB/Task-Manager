@@ -24,9 +24,9 @@ const LoginPage: React.FC = () => {
         localStorage.setItem('user', JSON.stringify(response.data));
         const roleName = response.data?.user?.role?.name;
         if (roleName === 'Admin') {
-           navigate('/todoapp/personnel');
+           navigate('/main/personnel');
         } else {
-           navigate('/todoapp/dashboard');
+           navigate('/main/dashboard');
         }
       }
     } catch (err) {
@@ -50,7 +50,7 @@ const LoginPage: React.FC = () => {
       <div className="text-red-400 text-center p-8 border border-red-500/30 bg-red-500/10 rounded-xl m-4">
         <p className="mb-4">{error}</p>
         <button
-          onClick={() => navigate("/todoapp/tasks")}
+          onClick={() => navigate("/main/tasks")}
           className="px-4 py-2 bg-red-500/20 text-red-500 border border-red-500/50 rounded-xl hover:bg-red-500/30 font-medium transition-colors"
         >
           Quay lại danh sách

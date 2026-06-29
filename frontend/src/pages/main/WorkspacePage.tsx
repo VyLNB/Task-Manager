@@ -199,7 +199,7 @@ const WorkspacePage = () => {
                             key={ws._id}
                             workspace={ws}
                             leader={ws.leader}
-                            onOpen={(id) => navigate(`/todoapp/workspace/${id}`)}
+                            onOpen={(id) => navigate(`/main/workspace/${id}`)}
                             category="WORKSPACE"
                             onStatusChange={ws.leader._id === currentUserId ? handleStatusChange : undefined}
                         />

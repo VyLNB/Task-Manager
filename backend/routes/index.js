@@ -4,6 +4,7 @@ import taskRouter from './taskRouter.js';
 import workspaceRouter from './workspaceRouter.js';
 import roleRouter from './roleRouter.js';
 import userRouter from './userRouter.js';
+import timesheetRouter from './timesheetRouter.js';
 
 const router = express.Router();
 
@@ -12,5 +13,6 @@ router.use('/tasks', taskRouter);
 router.use('/workspaces', workspaceRouter);
 router.use('/roles', roleRouter);
 router.use('/users', userRouter);
+router.use('/timesheets', timesheetRouter);
 
 export default router;

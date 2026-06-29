@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { getAllProjectsAdmin } from '../../services/workspace';
-import type { WorkspaceInterface } from '../../interfaces/workspace';
-import { Users, FileText, CalendarDays, Loader2, X } from 'lucide-react';
+import { getAllProjectsAdmin } from '../../../services/workspace';
+import type { WorkspaceInterface } from '../../../interfaces/workspace';
+import { Users, FileText, CalendarDays, Loader2, X, Clock } from 'lucide-react';
+import { WorkspaceTimesheets } from '../../../components/workspace/WorkspaceTimesheets';
 
 const ProjectPage: React.FC = () => {
     const [projects, setProjects] = useState<WorkspaceInterface[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [selectedProject, setSelectedProject] = useState<WorkspaceInterface | null>(null);
+    const [selectedProjectForTimesheet, setSelectedProjectForTimesheet] = useState<WorkspaceInterface | null>(null);
 
     useEffect(() => {
         const fetchProjects = async () => {
@@ -116,6 +118,19 @@ const ProjectPage: React.FC = () => {
                                     <span className="text-[10px] uppercase font-bold text-teal-500/70 border border-teal-500/30 px-2 py-0.5 rounded">Xem chi tiết</span>
                                 </div>
 
+                                <div 
+                                    className="flex items-center justify-between text-teal-200/80 bg-black/20 p-2.5 rounded-lg cursor-pointer hover:bg-teal-900/30 transition-colors mt-2"
+                                    onClick={() => setSelectedProjectForTimesheet(project)}
+                                >
+                                    <div className="flex items-center">
+                                        <Clock size={16} className="mr-3 text-teal-500 shrink-0" />
+                                        <span className="font-medium">
+                                            Timesheet & Log Time
+                                        </span>
+                                    </div>
+                                    <span className="text-[10px] uppercase font-bold text-teal-500/70 border border-teal-500/30 px-2 py-0.5 rounded">Xem lịch sử</span>
+                                </div>
+
                                 {(project.startDate || project.endDate) && (
                                     <div className="flex items-center text-teal-200/60 bg-black/20 p-2.5 rounded-lg">
                                         <CalendarDays size={14} className="mr-3 shrink-0 text-teal-500" />
@@ -185,6 +200,36 @@ const ProjectPage: React.FC = () => {
                                     Không có thành viên nào.
                                 </div>
                             )}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Timesheet Modal */}
+            {selectedProjectForTimesheet && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setSelectedProjectForTimesheet(null)}>
+                    <div 
+                        className="bg-[#0f1f1b] border border-teal-800/50 rounded-2xl w-full max-w-5xl shadow-2xl flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200" 
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="flex items-center justify-between p-5 border-b border-teal-800/50">
+                            <div>
+                                <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                                    <Clock className="text-teal-500" />
+                                    Thời gian làm việc (Timesheet)
+                                </h3>
+                                <p className="text-teal-200/60 text-sm mt-1">{selectedProjectForTimesheet.name}</p>
+                            </div>
+                            <button 
+                                onClick={() => setSelectedProjectForTimesheet(null)}
+                                className="text-teal-200/50 hover:text-white p-2 hover:bg-teal-900/30 rounded-lg transition-colors"
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+                        
+                        <div className="p-5 overflow-y-auto scrollbar-thin scrollbar-thumb-teal-600 scrollbar-track-transparent">
+                            <WorkspaceTimesheets workspaceId={selectedProjectForTimesheet._id} isAdminView={true} />
                         </div>
                     </div>
                 </div>

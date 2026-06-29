@@ -2,7 +2,7 @@
 import ToDoForm from "../../components/TaskForm";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getAllToDo, updateTask } from "../../services/todo";
+import { getAllToDo, updateTask } from "../../services/task";
 import type { ToDoItemInterface } from "../../interfaces/todo";
 
 // Interface nội bộ để match với props của ToDoForm
@@ -86,7 +86,7 @@ const TaskDetail = () => {
             } as any);
 
             // Thành công thì quay về trang danh sách
-            navigate("/todoapp/tasks");
+            navigate("/main/tasks");
         } catch (err) {
             console.error('Error updating task:', err);
             alert("Cập nhật thất bại. Vui lòng thử lại!");
@@ -113,7 +113,7 @@ const TaskDetail = () => {
             <div className="text-red-400 text-center p-8 border border-red-500/30 bg-red-500/10 rounded-xl m-4">
                 <p className="mb-4">{error}</p>
                 <button
-                    onClick={() => navigate("/todoapp/tasks")}
+                    onClick={() => navigate("/main/tasks")}
                     className="px-4 py-2 bg-red-500/20 text-red-500 border border-red-500/50 rounded-xl hover:bg-red-500/30 font-medium transition-colors"
                 >
                     Quay lại danh sách

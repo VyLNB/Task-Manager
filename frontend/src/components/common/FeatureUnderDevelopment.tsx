@@ -56,7 +56,7 @@ const FeatureUnderDevelopment = () => {
 
                 {/* Back Link */}
                 <div>
-                    <a href="/todoapp/tasks" className="inline-flex items-center gap-2 text-teal-400 hover:text-teal-300 font-medium transition-colors">
+                    <a href="/main/tasks" className="inline-flex items-center gap-2 text-teal-400 hover:text-teal-300 font-medium transition-colors">
                         <ArrowLeft size={18} />
                         Quay lại trang chủ
                     </a>

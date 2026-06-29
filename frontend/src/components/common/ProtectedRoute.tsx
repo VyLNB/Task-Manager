@@ -18,11 +18,11 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requireAdmin,
     }
 
     if (requireAdmin && !isAdmin) {
-        return <Navigate to="/todoapp/dashboard" replace />;
+        return <Navigate to="/main/dashboard" replace />;
     }
 
     if (requireMember && isAdmin) {
-        return <Navigate to="/todoapp/personnel" replace />;
+        return <Navigate to="/main/personnel" replace />;
     }
 
     if (requireMember && !isMember && !isAdmin) {

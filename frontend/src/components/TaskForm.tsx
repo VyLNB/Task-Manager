@@ -104,7 +104,7 @@ const ToDoForm: React.FC<TaskDetailProps> = ({
     if (onCancel) {
       onCancel();
     } else {
-      navigate("/todoapp/tasks");
+      navigate("/main/tasks");
     }
   };
 
