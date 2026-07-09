@@ -135,7 +135,13 @@ export const TaskCard = ({
                   ? 'bg-teal-500 text-[#0f1f1b] hover:bg-teal-400' 
                   : (isPM && task.hasAnyTimesheet ? 'bg-teal-700/50 text-teal-200 border border-teal-500/50 hover:bg-teal-600/50' : 'bg-amber-500/10 text-amber-400 border border-amber-500/30 hover:bg-amber-500 hover:text-[#0f1f1b]')
               }`}
-              onClick={() => setIsLogTimeOpen(true)}
+              onClick={() => {
+                if (task.status !== 'IN PROGRESS') {
+                  alert('Vui lòng chuyển Task sang cột IN PROGRESS để log time!');
+                  return;
+                }
+                setIsLogTimeOpen(true);
+              }}
               title={task.myTimesheet ? "Xem/Sửa Timesheet của bạn" : (isPM && task.hasAnyTimesheet ? "Member Đã Log - Bấm để log thêm của bạn" : "Log Time")}
             >
               <Clock size={16} />

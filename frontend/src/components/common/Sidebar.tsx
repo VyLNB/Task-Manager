@@ -7,18 +7,15 @@ import {
     LayoutDashboard,
     ChevronLeft,
     GraduationCap,
-    // Calendar,
     UserCircle,
-    // LayersPlus,
-    // Users,
     Shield,
     LogOut,
     File,
     Clock
 } from "lucide-react";
-
 import { signout } from "../../services/auth";
 import { usePermission } from "../../hooks/usePermission";
+import LogoImage from '../../assets/Logo_Task_Manager.png';
 
 
 interface MenuItem {
@@ -146,9 +143,7 @@ const SideBar: React.FC<SidebarProps> = ({ isMobileOpen, setIsMobileOpen, onOpen
             >
                 {!isCollapsed && (
                     <div className="flex items-center space-x-3 overflow-hidden">
-                        <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center flex-shrink-0">
-                            <GraduationCap color="green" />
-                        </div>
+                        <img src={LogoImage} alt="Logo" width={40} />
                         <span className="font-bold text-xl truncate">Task Manager</span>
                     </div>
                 )}

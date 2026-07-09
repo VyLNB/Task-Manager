@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { signup } from '../../services/auth';
+import LogoImage from '../../assets/Logo_Task_Manager.png';
+
 const RegisterPage: React.FC = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -68,12 +70,7 @@ const RegisterPage: React.FC = () => {
             <div className="relative z-10 bg-[#1a2f2a]/60 backdrop-blur-xl rounded-3xl shadow-2xl p-4 w-full max-w-sm border border-teal-800/50">
                 {/* Logo */}
                 <div className="flex justify-center mb-3">
-                    <div className="bg-[#0f1f1b] rounded-2xl p-2 shadow-[0_0_15px_rgba(20,184,166,0.2)] border border-teal-800/50">
-                        <svg width="40" height="40" viewBox="0 0 100 100" className="text-teal-400">
-                            <path d="M20,40 Q30,20 40,40 T60,40" stroke="currentColor" strokeWidth="12" fill="none" strokeLinecap="round" />
-                            <path d="M20,60 Q30,40 40,60 T60,60" stroke="currentColor" strokeWidth="12" fill="none" strokeLinecap="round" />
-                        </svg>
-                    </div>
+                    <img src={LogoImage} alt="Logo" width={100} />
                 </div>
 
                 <h1 className="text-white text-2xl font-bold text-center mb-4">Đăng ký</h1>
