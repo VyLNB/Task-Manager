@@ -1,105 +1,89 @@
-# Task Manager Pro (Full-Stack To-Do App)
+# Task Manager Platform
 
-Một ứng dụng Quản lý Công việc toàn diện (Full-stack) mang lại trải nghiệm mượt mà, chuyên nghiệp. Ứng dụng không chỉ dừng lại ở các tính năng To-do cơ bản mà còn hỗ trợ **bảng Kanban tương tác**, **phân quyền Workspace (Nhóm)**, và **hỗ trợ Task Cá Nhân**.
+A comprehensive, scalable, and modern full-stack task and time management platform built with the MERN stack. It streamlines project tracking, team collaboration, and timesheet approvals through a highly responsive and intuitive glassmorphism-inspired UI.
 
-Dự án được xây dựng với kiến trúc hiện đại, tập trung vào khả năng mở rộng và UX/UI đẹp mắt.
+## Key Features
 
----
+### 1. Authentication & Security
+* **Secure Auth:** JWT-based authentication combined with HTTP-only cookies to mitigate XSS vulnerabilities.
+* **Role-Based Access Control (RBAC):** Dynamic role and permission management. Allows fine-grained access control (e.g., Admin, Project Manager, Member) across the system.
 
-## 🛠 Công nghệ sử dụng
+### 2. Workspace & Project Management
+* **Workspaces:** Create isolated project environments.
+* **Member Allocation:** Dynamically add or remove members to projects and assign Project Managers (Leaders).
+* **Data Isolation:** Ensures task and timesheet data is strictly isolated within designated workspaces.
 
-**Frontend (Giao diện người dùng):**
-- **React** (với Vite)
-- **TypeScript** (Đảm bảo Type-safety)
-- **Tailwind CSS** (Giao diện Dark Mode, tối giản, sang trọng)
-- **React Router** (Điều hướng SPA)
-- **Axios** (Gọi API Backend)
-- **Custom Hooks** (Tái cấu trúc Logic Data)
+### 3. Task Management & Kanban Board
+* **Interactive Kanban Workflow:** HTML5 drag-and-drop board for tracking task statuses (`TO DO`, `IN PROGRESS`, `BLOCKED`, `COMPLETED/DONE`).
+* **Task Details:** Supports priority levels, tags, deadlines, and member assignments.
+* **Subtasks:** Granular checklists within main tasks to track completion progress.
+* **Progress Tracking:** Automatic progress percentage tracking and actual time calculations.
 
-**Backend (Máy chủ & Cơ sở dữ liệu):**
-- **Node.js** & **Express.js** (Xây dựng RESTful API)
-- **MongoDB** & **Mongoose** (Lưu trữ và truy vấn dữ liệu linh hoạt)
-- **JWT (JSON Web Token)** (Xác thực và phân quyền người dùng)
-- **Bcrypt** (Mã hóa mật khẩu)
+### 4. Timesheet & Time Tracking Workflow
+* **Time Logging:** Log exact hours, start/end times, and task results (requires task to be `IN PROGRESS`).
+* **Daily Aggregation:** Automatically groups individual time logs into Daily Timesheets.
+* **Approval Hierarchy:** 
+  * Members submit their daily timesheets.
+  * Project Managers review, approve, or reject (with required feedback/comments) timesheets.
+* **Timesheet History:** Comprehensive logs for users to track their historical time allocations.
 
----
+### 5. Admin Dashboard & System Analytics
+* **Real-time Analytics:** Centralized dashboard utilizing complex MongoDB aggregations to process and visualize task metrics, resource bottlenecks, and project progress.
+* **Personnel Management:** Manage all system users, toggle active/inactive status, and assign roles.
+* **Role Management:** Interface to create custom roles and toggle specific granular permissions (e.g., `CREATE_TASK`, `MANAGE_USERS`).
+* **Global Timesheet Stats:** Administrators can view total logged, approved, and pending hours across the entire system.
 
-## Tính năng Nổi bật
-
-### 1. Xác thực & Phân quyền
-- **Đăng nhập / Đăng ký**: Quản lý tài khoản người dùng an toàn.
-- **Bảo mật JWT**: Hệ thống tự động tạo Access Token và Refresh Token, chặn mọi truy cập trái phép vào các API nội bộ.
-
-### 2. Quản lý Workspace (Nhóm / Dự án)
-- **Tạo & Quản lý Nhóm**: Người dùng có thể tạo Workspace riêng, mời thành viên tham gia.
-- **Vai trò (Leader / Member)**: Phân chia rõ ràng người tạo (Leader) và thành viên (Member).
-- **Phân quyền dữ liệu chặt chẽ**: Chỉ các thành viên thuộc Workspace mới có thể xem, tạo, sửa hoặc xóa công việc bên trong Workspace đó (Bảo vệ bằng mã lỗi `403 Forbidden`).
-
-### 3. Task Cá Nhân (Personal Tasks)
-- Bên cạnh các công việc thuộc Workspace, hệ thống chính thức hỗ trợ **Công việc Cá nhân**.
-- Khi tạo Task, nếu không chọn Workspace, nó sẽ trở thành Task bí mật của riêng bạn, không ai khác có quyền truy cập.
-- **Smart Tags (Nhãn thông minh)**: Giao diện tự động phân tích và dán nhãn hiển thị Tên Workspace hoặc chữ "CÁ NHÂN" để dễ dàng phân biệt.
-
-### 4. Bảng Kanban Tương tác
-- **Kéo - Thả (Drag & Drop)**: Trải nghiệm kéo thả mượt mà để chuyển đổi trạng thái công việc (TO DO ➜ IN PROGRESS ➜ COMPLETED).
-- **Kanban Nhóm**: Xem riêng công việc của một Dự án/Workspace.
-- **Kanban Tổng hợp**: Màn hình "Công việc của tôi" gom toàn bộ Task (của các Workspace + Cá nhân) vào một nơi để dễ quản lý.
-
-### 5. Giao diện Hiện đại (UX/UI)
-- Giao diện **Dark Theme** với các điểm nhấn màu xanh (`#2DD480`).
-- **Modal Popup**: Cửa sổ nổi tạo Công việc, hiển thị ngay trên bảng Kanban mà không cần chuyển trang.
-- Dialog cảnh báo thông minh, thông báo lỗi trực quan.
+### 6. Modern UI/UX
+* **Glassmorphism Aesthetic:** Modern, dark-themed UI built with TailwindCSS.
+* **Optimistic UI:** Ensures seamless drag-and-drop and status updates without redundant backend API synchronization delays.
+* **Responsive Design:** Consistent user experience across varying screen sizes.
 
 ---
 
-## 📂 Cấu trúc Thư mục Chính
+## Technology Stack
 
-```bash
-Task-Manager/
-│
-├── frontend/                 # Ứng dụng Client (React + TypeScript)
-│   ├── src/
-│   │   ├── components/       # Các UI Component (Form, Modal, KanbanBoard,...)
-│   │   ├── hooks/            # Logic Data (useTasks, ...)
-│   │   ├── interfaces/       # Định nghĩa TypeScript Types
-│   │   ├── pages/            # Các trang chính (Dashboard, Auth, Workspace, ...)
-│   │   └── services/         # Tích hợp API gọi Backend
-│   └── package.json
-│
-└── backend/                  # Máy chủ API (Express + MongoDB)
-    ├── config/               # Cấu hình Môi trường (Environment, DB)
-    ├── controller/           # Logic xử lý API (Task, Workspace, Auth)
-    ├── middleware/           # Trạm trung chuyển (Check JWT, Error handler)
-    ├── model/                # Mongoose Schema
-    ├── routes/               # API Router
-    └── package.json
-```
+### Frontend
+* **Core:** React, TypeScript, Vite
+* **Styling:** TailwindCSS (Utility-first, Glassmorphism)
+* **Icons:** Lucide React
+* **Routing:** React Router DOM
+
+### Backend
+* **Core:** Node.js, Express.js
+* **Database:** MongoDB, Mongoose
+* **Authentication:** JSON Web Tokens (JWT), HTTP-only Cookies
+* **Data Processing:** Mongoose Aggregation Pipelines
 
 ---
 
-## Hướng dẫn Cài đặt & Chạy dự án
+## Getting Started
 
-### 1. Yêu cầu hệ thống
-- **Node.js** (Phiên bản v18 trở lên)
-- **MongoDB** (Local hoặc MongoDB Atlas)
+### Prerequisites
+* Node.js (v16+)
+* MongoDB (Local or Atlas Cluster)
 
-### 2. Thiết lập Backend
-```bash
-cd backend
-npm install
-```
-- Tạo file `.env` (hoặc `.env.local`) trong thư mục `backend/secrets` (hoặc thư mục gốc backend) như file `.env.example`.
-```
-- Chạy Server:
-```bash
-npm start
-```
-*(Server mặc định sẽ chạy ở `http://localhost:3000`)*
+### Installation
+1. Clone the repository.
+2. Install backend dependencies:
+   ```bash
+   cd backend
+   npm install
+   ```
+3. Install frontend dependencies:
+   ```bash
+   cd frontend
+   npm install
+   ```
 
-### 3. Thiết lập Frontend
-```bash
-cd frontend
-npm install
-npm run dev
-```
-*(Frontend mặc định sẽ chạy ở `http://localhost:5173`)*
+### Running Locally
+1. Start the backend server (ensure your `.env` is configured with MongoDB URI and JWT secrets):
+   ```bash
+   cd backend
+   npm run dev
+   ```
+2. Start the frontend development server:
+   ```bash
+   cd frontend
+   npm run dev
+   ```
+3. Open `http://localhost:5173` in your browser.
