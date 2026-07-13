@@ -1,5 +1,6 @@
 import TaskModel from "../model/TaskModel.js";
 import { WorkspaceModel } from "../model/WorkspaceModel.js";
+import { checkIsWorkspaceLeader } from "../utils/roleHelper.js";
 
 // lấy tất cả công việc
 export const getAllTasks = async (req, res) => {
@@ -71,7 +72,7 @@ export const getTaskById = async (req, res) => {
 // tạo công việc mới
 export const createTask = async (req, res) => {
     try {
-        const { workspaceId, title, description, priority, dueDate, startDate, tags, assigneeId } = req.body;
+        const { workspaceId, title, description, priority, dueDate, startDate, tags, assigneeId, sprintId, estimatedHours, taskType } = req.body;
 
         if (!workspaceId) {
             return res.status(400).json({ message: "workspaceId là bắt buộc" });
@@ -86,12 +87,25 @@ export const createTask = async (req, res) => {
             return res.status(403).json({ message: "Bạn không có quyền tạo công việc trong workspace này" });
         }
 
+        const isLeader = await checkIsWorkspaceLeader(workspaceId, req.userId);
+        
+        let finalTaskType = taskType || 'Planned';
+        if (!isLeader) {
+            const allowedUnplannedTypes = ['Sub-task', 'Bug Fixing', 'Ad-hoc'];
+            if (!allowedUnplannedTypes.includes(finalTaskType)) {
+                return res.status(400).json({ message: "Thành viên chỉ được tạo task phát sinh (Sub-task, Bug Fixing, Ad-hoc)" });
+            }
+        }
+
         const newTask = new TaskModel({
             title,
             description,
             creatorId: req.userId,
             workspaceId,
+            sprintId: sprintId || null,
             priority,
+            estimatedHours,
+            taskType: finalTaskType,
             dueDate,
             startDate,
             tags,
@@ -125,10 +139,9 @@ export const updateTask = async (req, res) => {
             return res.status(403).json({ message: "Bạn không có quyền truy cập công việc này" });
         }
 
-        // Check if user is Assignee, Creator, or Workspace Leader
+        const isLeader = await checkIsWorkspaceLeader(workspace._id, req.userId);
         const isAssignee = task.assigneeId && task.assigneeId.toString() === req.userId;
         const isCreator = task.creatorId && task.creatorId.toString() === req.userId;
-        const isLeader = workspace.leader && workspace.leader.toString() === req.userId;
 
         if (!isAssignee && !isCreator && !isLeader) {
             return res.status(403).json({ message: "Chỉ người được giao việc hoặc Quản lý dự án mới có quyền cập nhật công việc này" });
@@ -145,6 +158,9 @@ export const updateTask = async (req, res) => {
         if (req.body.startDate !== undefined) updatedData.startDate = req.body.startDate;
         if (req.body.tags !== undefined) updatedData.tags = req.body.tags;
         if (req.body.assigneeId !== undefined) updatedData.assigneeId = req.body.assigneeId;
+        if (req.body.sprintId !== undefined) updatedData.sprintId = req.body.sprintId;
+        if (req.body.estimatedHours !== undefined) updatedData.estimatedHours = req.body.estimatedHours;
+        if (req.body.taskType !== undefined) updatedData.taskType = req.body.taskType;
 
         const updatedTask = await TaskModel.findByIdAndUpdate(
             req.params.id,
@@ -158,5 +174,37 @@ export const updateTask = async (req, res) => {
             message: "Lỗi khi cập nhật công việc",
             error: error.message
         });
+    }
+};
+
+export const pauseTask = async (req, res) => {
+    try {
+        const task = await TaskModel.findById(req.params.id);
+        if (!task) return res.status(404).json({ message: "Không tìm thấy công việc" });
+
+        const isLeader = await checkIsWorkspaceLeader(task.workspaceId, req.userId);
+        if (!isLeader) return res.status(403).json({ message: "Chỉ PM mới có quyền tạm dừng công việc" });
+
+        task.isPaused = !task.isPaused;
+        await task.save();
+        res.status(200).json(task);
+    } catch (error) {
+        res.status(500).json({ message: "Lỗi khi tạm dừng công việc", error: error.message });
+    }
+};
+
+export const cancelTask = async (req, res) => {
+    try {
+        const task = await TaskModel.findById(req.params.id);
+        if (!task) return res.status(404).json({ message: "Không tìm thấy công việc" });
+
+        const isLeader = await checkIsWorkspaceLeader(task.workspaceId, req.userId);
+        if (!isLeader) return res.status(403).json({ message: "Chỉ PM mới có quyền hủy công việc" });
+
+        task.isCancelled = !task.isCancelled;
+        await task.save();
+        res.status(200).json(task);
+    } catch (error) {
+        res.status(500).json({ message: "Lỗi khi hủy công việc", error: error.message });
     }
 };

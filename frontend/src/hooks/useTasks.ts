@@ -64,6 +64,13 @@ export function useTasks(workspaceId?: string) {
                     workspaceId: typeof item.workspaceId === 'object' ? item.workspaceId?._id : item.workspaceId,
                     myTimesheet,
                     hasAnyTimesheet: hasAnyTimesheet || !!myTimesheet,
+                    sprintId: item.sprintId,
+                    estimatedHours: item.estimatedHours,
+                    taskType: item.taskType,
+                    isPaused: item.isPaused,
+                    isCancelled: item.isCancelled,
+                    startDate: item.startDate,
+                    dueDate: item.dueDate
                 };
             });
             setTasks(convertedTasks);

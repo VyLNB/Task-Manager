@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ConfirmDialog from './common/ConfirmDialog';
 import type { WorkspaceInterface } from '../interfaces/workspace';
+import type { Sprint } from '../interfaces/sprint';
+import { usePermission } from '../hooks/usePermission';
 
 interface ToDoItemInterface {
   id?: string;
@@ -12,12 +14,17 @@ interface ToDoItemInterface {
   tags: string[];
   workspaceId?: string;
   assigneeId?: string;
+  sprintId?: string;
+  estimatedHours?: number;
+  startDate?: string;
+  taskType?: string;
 }
 
 interface TaskDetailProps {
   initialData?: ToDoItemInterface | null;
   isEditMode?: boolean;
   workspaces?: WorkspaceInterface[];
+  sprints?: Sprint[];
   workspaceId?: string;
   onSubmit?: (formData: ToDoItemInterface) => void;
   onDelete?: (id: string) => void;
@@ -28,11 +35,13 @@ const ToDoForm: React.FC<TaskDetailProps> = ({
   initialData,
   isEditMode = false,
   workspaces = [],
+  sprints = [],
   workspaceId: initialWorkspaceId,
   onSubmit,
   onDelete,
   onCancel
 }) => {
+  const { isProjectManager } = usePermission();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [deadline, setDeadline] = useState('');
@@ -40,6 +49,10 @@ const ToDoForm: React.FC<TaskDetailProps> = ({
   const [tags, setTags] = useState<string[]>([]);
   const [workspaceId, setWorkspaceId] = useState<string>('');
   const [assigneeId, setAssigneeId] = useState<string>('');
+  const [sprintId, setSprintId] = useState<string>('');
+  const [estimatedHours, setEstimatedHours] = useState<number | ''>('');
+  const [startDate, setStartDate] = useState('');
+  const [taskType, setTaskType] = useState('Sub-task');
   const [isCancelDialogOpen, setIsCancelDialogOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -53,6 +66,10 @@ const ToDoForm: React.FC<TaskDetailProps> = ({
       setTags(initialData.tags || []);
       setWorkspaceId(initialData.workspaceId || initialWorkspaceId || '');
       setAssigneeId(initialData.assigneeId || '');
+      setSprintId(initialData.sprintId || '');
+      setEstimatedHours(initialData.estimatedHours || '');
+      setStartDate(initialData.startDate ? new Date(initialData.startDate).toISOString().split('T')[0] : '');
+      setTaskType(initialData.taskType || 'Sub-task');
     } else {
       // Reset form khi ở chế độ thêm mới
       setTitle('');
@@ -62,6 +79,10 @@ const ToDoForm: React.FC<TaskDetailProps> = ({
       setTags([]);
       setWorkspaceId(initialWorkspaceId || '');
       setAssigneeId('');
+      setSprintId('');
+      setEstimatedHours('');
+      setStartDate('');
+      setTaskType('Sub-task');
     }
   }, [isEditMode, initialData, initialWorkspaceId]);
 
@@ -79,7 +100,11 @@ const ToDoForm: React.FC<TaskDetailProps> = ({
       priority,
       tags,
       workspaceId,
-      assigneeId: workspaceId ? assigneeId : undefined
+      assigneeId: workspaceId ? assigneeId : undefined,
+      sprintId: sprintId || undefined,
+      estimatedHours: estimatedHours === '' ? undefined : Number(estimatedHours),
+      startDate: startDate || undefined,
+      taskType: isProjectManager ? 'Planned' : taskType
     };
 
     if (onSubmit) {
@@ -137,6 +162,27 @@ const ToDoForm: React.FC<TaskDetailProps> = ({
           </select>
         </div>
 
+        {/* Sprint */}
+        {workspaceId && sprints.length > 0 && (
+          <div>
+            <label className="block text-sm font-medium text-white mb-2">
+              Gói thời gian (Sprint)
+            </label>
+            <select
+              value={sprintId}
+              onChange={(e) => setSprintId(e.target.value)}
+              className="w-full px-3 py-2 border border-teal-700 rounded-md focus:outline-none 
+                          focus:ring-1 focus:ring-teal-500 focus:border-teal-500 text-white bg-[#0f1f1b]"
+              required
+            >
+              <option value="">-- Chọn Sprint --</option>
+              {sprints.map(sprint => (
+                <option key={sprint._id} value={sprint._id}>{sprint.name}</option>
+              ))}
+            </select>
+          </div>
+        )}
+
         {/* Assignee (Chỉ hiện khi thuộc Workspace) */}
         {workspaceId && selectedWorkspace && (
           <div>
@@ -169,8 +215,87 @@ const ToDoForm: React.FC<TaskDetailProps> = ({
             onChange={(e) => setTitle(e.target.value)}
             className="w-full px-3 py-2 border border-teal-700 bg-[#0f1f1b] rounded-md focus:outline-none 
                         focus:ring-1 focus:ring-teal-500 focus:border-teal-500 text-white"
+            required
           />
         </div>
+
+        <div className="flex gap-4">
+          <div className="w-1/2">
+            <label className="block text-sm font-medium text-white mb-2">
+              Thời gian dự kiến (Giờ)
+            </label>
+            <input
+              type="number"
+              placeholder="Ví dụ: 5"
+              value={estimatedHours}
+              onChange={(e) => setEstimatedHours(Number(e.target.value))}
+              className="w-full px-3 py-2 border border-teal-700 bg-[#0f1f1b] rounded-md focus:outline-none 
+                          focus:ring-1 focus:ring-teal-500 focus:border-teal-500 text-white"
+            />
+          </div>
+          <div className="w-1/2">
+             {/* Priority */}
+             <label className="block text-sm font-medium text-white mb-2">
+              Mức độ ưu tiên
+            </label>
+            <select
+              value={priority}
+              onChange={(e) => setPriority(e.target.value)}
+              className="w-full px-3 py-2 border border-teal-700 rounded-md focus:outline-none 
+                          focus:ring-1 focus:ring-teal-500 focus:border-teal-500 text-white bg-[#0f1f1b]"
+            >
+              <option value="LOW">Thấp (LOW)</option>
+              <option value="MEDIUM">Trung bình (MEDIUM)</option>
+              <option value="HIGH">Cao (HIGH)</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="flex gap-4">
+          <div className="w-1/2">
+            <label className="block text-sm font-medium text-white mb-2">
+              Ngày bắt đầu
+            </label>
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className="w-full px-3 py-2 border border-teal-700 bg-[#0f1f1b] rounded-md focus:outline-none 
+                          focus:ring-1 focus:ring-teal-500 focus:border-teal-500 text-white"
+            />
+          </div>
+          <div className="w-1/2">
+            <label className="block text-sm font-medium text-white mb-2">
+              Hạn chót (Deadline)
+            </label>
+            <input
+              type="date"
+              value={deadline}
+              onChange={(e) => setDeadline(e.target.value)}
+              className="w-full px-3 py-2 border border-teal-700 bg-[#0f1f1b] rounded-md focus:outline-none 
+                          focus:ring-1 focus:ring-teal-500 focus:border-teal-500 text-white"
+            />
+          </div>
+        </div>
+
+        {!isProjectManager && (
+          <div>
+            <label className="block text-sm font-medium text-white mb-2">
+              Loại công việc (Công việc phát sinh)
+            </label>
+            <select
+              value={taskType}
+              onChange={(e) => setTaskType(e.target.value)}
+              className="w-full px-3 py-2 border border-teal-700 rounded-md focus:outline-none 
+                          focus:ring-1 focus:ring-teal-500 focus:border-teal-500 text-white bg-[#0f1f1b]"
+            >
+              <option value="Sub-task">Chia nhỏ công việc (Sub-task)</option>
+              <option value="Bug Fixing">Sửa lỗi phát sinh (Bug Fixing)</option>
+              <option value="Ad-hoc">Việc ngoài lề (Ad-hoc)</option>
+            </select>
+            <p className="text-teal-200/50 text-xs mt-1">Vì bạn không phải Project Manager, task này sẽ được gắn nhãn là công việc phát sinh.</p>
+          </div>
+        )}
 
         {/* Mô tả */}
         <div>
@@ -185,23 +310,6 @@ const ToDoForm: React.FC<TaskDetailProps> = ({
             className="w-full px-3 py-2 border border-teal-700 bg-[#0f1f1b] rounded-md focus:outline-none 
                       focus:ring-1 focus:ring-teal-500 focus:border-teal-500 resize-none text-white"
           />
-        </div>
-
-        {/* Priority */}
-        <div>
-          <label className="block text-sm font-medium text-white mb-2">
-            Mức độ ưu tiên
-          </label>
-          <select
-            value={priority}
-            onChange={(e) => setPriority(e.target.value)}
-            className="w-full px-3 py-2 border border-teal-700 rounded-md focus:outline-none 
-                        focus:ring-1 focus:ring-teal-500 focus:border-teal-500 text-white bg-[#0f1f1b]"
-          >
-            <option value="LOW">Thấp (LOW)</option>
-            <option value="MEDIUM">Trung bình (MEDIUM)</option>
-            <option value="HIGH">Cao (HIGH)</option>
-          </select>
         </div>
 
         {/* Buttons */}

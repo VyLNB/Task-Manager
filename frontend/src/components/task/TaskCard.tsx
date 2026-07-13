@@ -1,8 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import type { Task } from '../../interfaces/task';
-import { Calendar, CheckSquare, CheckCircle2, Edit, Clock } from 'lucide-react';
+import { Calendar, CheckSquare, CheckCircle2, Edit, Clock, Pause, XCircle, Play } from 'lucide-react';
 import { LogTimeModal } from './LogTimeModal';
+import { pauseTask, cancelTask } from '../../services/task';
 export const TaskCard = ({
   task,
   onDragStart,
@@ -21,31 +22,66 @@ export const TaskCard = ({
   const isPM = userObj?.user?.role?.name === 'Project Manager';
 
   const canEdit = isPM || task.creatorId === currentUserId || task.assigneeId === currentUserId;
+  const isUnplanned = task.taskType === 'Sub-task' || task.taskType === 'Bug Fixing' || task.taskType === 'Ad-hoc';
+
+  const handlePause = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      await pauseTask(task.id);
+      window.dispatchEvent(new Event('task_updated')); // refresh tasks
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleCancel = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (confirm("Bạn có chắc muốn hủy task này không?")) {
+      try {
+        await cancelTask(task.id);
+        window.dispatchEvent(new Event('task_updated'));
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  };
 
   return (
     <div
       draggable={canEdit}
       onDragStart={(e) => canEdit && onDragStart(e, task.id)}
-      className={`bg-[#1a2f2a]/60 backdrop-blur-md p-4 rounded-2xl border ${task.status === 'IN PROGRESS' && task.id === '3'
-        ? 'border-teal-400'
-        : 'border-teal-800/50'
-        } ${canEdit ? 'cursor-grab active:cursor-grabbing hover:border-teal-400/50 hover:bg-[#1a2f2a]/80' : 'cursor-not-allowed opacity-80'} transition-colors shadow-xl`}
+      className={`bg-[#1a2f2a]/60 backdrop-blur-md p-4 rounded-2xl border 
+        ${task.isCancelled ? 'border-red-500/50 opacity-50 bg-red-900/10' : ''}
+        ${task.isPaused && !task.isCancelled ? 'border-amber-500/50 opacity-70 bg-amber-900/10' : ''}
+        ${!task.isCancelled && !task.isPaused && task.status === 'IN PROGRESS' ? 'border-teal-400' : ''}
+        ${!task.isCancelled && !task.isPaused && task.status !== 'IN PROGRESS' && isUnplanned ? 'border-purple-500/50 bg-purple-900/10' : ''}
+        ${!task.isCancelled && !task.isPaused && task.status !== 'IN PROGRESS' && !isUnplanned ? 'border-teal-800/50' : ''}
+        ${canEdit && !task.isCancelled ? 'cursor-grab active:cursor-grabbing hover:border-teal-400/50 hover:bg-[#1a2f2a]/80' : 'cursor-not-allowed opacity-80'} transition-colors shadow-xl relative`}
     >
       {/* Header Card: Priority & Date */}
       <div className="flex justify-between items-center mb-3">
-        <span
-          className={`text-[10px] font-bold px-2 py-1 rounded-md ${task.priority === 'HIGH PRIORITY'
-            ? 'bg-[#FF4D4D]/10 text-[#FF4D4D]'
-            : task.priority === 'MEDIUM PRIORITY'
-              ? 'bg-teal-500/10 text-teal-400'
-              : 'bg-gray-500/10 text-gray-400'
-            }`}
-        >
-          {task.priority}
-        </span>
+        <div className="flex gap-2">
+          <span
+            className={`text-[10px] font-bold px-2 py-1 rounded-md ${task.priority === 'HIGH PRIORITY' || task.priority === 'HIGH'
+              ? 'bg-[#FF4D4D]/10 text-[#FF4D4D]'
+              : task.priority === 'MEDIUM PRIORITY' || task.priority === 'MEDIUM'
+                ? 'bg-teal-500/10 text-teal-400'
+                : 'bg-gray-500/10 text-gray-400'
+              }`}
+          >
+            {task.priority === 'HIGH PRIORITY' ? 'HIGH' : task.priority === 'MEDIUM PRIORITY' ? 'MEDIUM' : task.priority === 'LOW PRIORITY' ? 'LOW' : task.priority}
+          </span>
+          {isUnplanned && (
+            <span className="text-[10px] font-bold px-2 py-1 rounded-md bg-purple-500/20 text-purple-300 border border-purple-500/30">
+              {task.taskType}
+            </span>
+          )}
+          {task.isPaused && <span className="text-[10px] font-bold px-2 py-1 rounded-md bg-amber-500/20 text-amber-400">PAUSED</span>}
+          {task.isCancelled && <span className="text-[10px] font-bold px-2 py-1 rounded-md bg-red-500/20 text-red-400">CANCELLED</span>}
+        </div>
         <div className="flex items-center text-gray-400 text-xs">
           {isCompleted ? <CheckCircle2 size={14} className="mr-1" /> : <Calendar size={14} className="mr-1" />}
-          {isCompleted ? 'Done' : task.date}
+          {isCompleted ? 'Done' : (task.dueDate ? new Date(task.dueDate).toLocaleDateString('vi-VN') : task.date)}
         </div>
       </div>
 
@@ -128,7 +164,7 @@ export const TaskCard = ({
             </button>
           )}
 
-          {canEdit && task.workspaceId && (
+          {canEdit && task.workspaceId && !task.isCancelled && !task.isPaused && (
             <button 
               className={`flex-1 py-2 rounded-xl font-bold text-xs flex items-center justify-center transition-colors ${
                 task.myTimesheet 
@@ -149,6 +185,18 @@ export const TaskCard = ({
             </button>
           )}
         </div>
+
+        {/* PM Actions for Unplanned tasks */}
+        {isPM && isUnplanned && !task.isCancelled && (
+          <div className="flex gap-2 mt-2 pt-2 border-t border-teal-800/30">
+            <button onClick={handlePause} className="flex-1 py-1.5 rounded-lg bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 border border-amber-500/30 text-[10px] font-bold flex items-center justify-center gap-1">
+              {task.isPaused ? <><Play size={12}/> Tiếp tục</> : <><Pause size={12}/> Tạm dừng</>}
+            </button>
+            <button onClick={handleCancel} className="flex-1 py-1.5 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/30 text-[10px] font-bold flex items-center justify-center gap-1">
+              <XCircle size={12}/> Hủy task
+            </button>
+          </div>
+        )}
       </div>
 
       {task.workspaceId && (

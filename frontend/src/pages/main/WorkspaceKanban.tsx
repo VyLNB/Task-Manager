@@ -1,13 +1,16 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { CheckSquare, User } from 'lucide-react';
 import { KanbanBoard } from '../../components/task/KanbanBoard';
 import { WorkspaceTimesheets } from '../../components/workspace/WorkspaceTimesheets';
 import { CreateTaskModal } from '../../components/task/CreateTaskModal';
 import { InviteMemberModal } from '../../components/workspace/InviteMemberModal';
+import { SprintManagerModal } from '../../components/workspace/SprintManagerModal';
 import { useTasks } from '../../hooks/useTasks';
 import { usePermission } from '../../hooks/usePermission';
 import { useParams } from 'react-router-dom';
 import { inviteMember } from '../../services/workspace';
+import { getSprintsByWorkspace } from '../../services/sprint';
+import type { Sprint } from '../../interfaces/sprint.ts';
 
 export default function WorkspaceKanban() {
   const { id: workspaceId } = useParams<{ id: string }>();
@@ -15,7 +18,29 @@ export default function WorkspaceKanban() {
   const { isProjectManager } = usePermission();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+  const [isSprintModalOpen, setIsSprintModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'kanban' | 'timesheet'>('kanban');
+  const [sprints, setSprints] = useState<Sprint[]>([]);
+  const [selectedSprintId, setSelectedSprintId] = useState<string>('all');
+
+  // Fetch sprints
+  const fetchSprints = async () => {
+    if (!workspaceId) return;
+    try {
+      const res = await getSprintsByWorkspace(workspaceId);
+      setSprints(res.data);
+    } catch (error) {
+      console.error("Lỗi khi tải Sprints:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchSprints();
+  }, [workspaceId]);
+
+  const filteredTasks = selectedSprintId === 'all' 
+    ? tasks 
+    : tasks.filter(task => task.sprintId === selectedSprintId);
 
   return (
     <div className="min-h-screen bg-[#0f1f1b] font-sans p-8">
@@ -31,6 +56,14 @@ export default function WorkspaceKanban() {
               <p className="text-teal-200/60 text-sm">Quản lý các công việc trong Workspace này.</p>
             </div>
             <div className="flex gap-3">
+              {isProjectManager && (
+                <button 
+                  onClick={() => setIsSprintModalOpen(true)}
+                  className="bg-[#1a2f2a] text-teal-200 px-4 py-2 rounded-full border border-teal-800/50 
+                            font-semibold text-sm hover:bg-teal-900/40 transition-colors">
+                  Quản lý Sprint
+                </button>
+              )}
               {isProjectManager && (
                 <button 
                   onClick={() => setIsInviteModalOpen(true)}
@@ -51,20 +84,38 @@ export default function WorkspaceKanban() {
             </div>
           </div>
 
-          <div className="flex gap-4 mt-6 border-b border-teal-800/50 pb-2">
-            <button
-                className={`px-4 py-2 font-bold text-sm rounded-t-lg transition-colors ${activeTab === 'kanban' ? 'text-teal-400 border-b-2 border-teal-400 bg-teal-900/20' : 'text-teal-200/50 hover:text-teal-200'}`}
-                onClick={() => setActiveTab('kanban')}
-            >
-                Kanban Board
-            </button>
-            {isProjectManager && (
-                <button
-                    className={`px-4 py-2 font-bold text-sm rounded-t-lg transition-colors ${activeTab === 'timesheet' ? 'text-teal-400 border-b-2 border-teal-400 bg-teal-900/20' : 'text-teal-200/50 hover:text-teal-200'}`}
-                    onClick={() => setActiveTab('timesheet')}
+          <div className="flex justify-between items-center mt-6 border-b border-teal-800/50 pb-2">
+            <div className="flex gap-4">
+              <button
+                  className={`px-4 py-2 font-bold text-sm rounded-t-lg transition-colors ${activeTab === 'kanban' ? 'text-teal-400 border-b-2 border-teal-400 bg-teal-900/20' : 'text-teal-200/50 hover:text-teal-200'}`}
+                  onClick={() => setActiveTab('kanban')}
+              >
+                  Kanban Board
+              </button>
+              {isProjectManager && (
+                  <button
+                      className={`px-4 py-2 font-bold text-sm rounded-t-lg transition-colors ${activeTab === 'timesheet' ? 'text-teal-400 border-b-2 border-teal-400 bg-teal-900/20' : 'text-teal-200/50 hover:text-teal-200'}`}
+                      onClick={() => setActiveTab('timesheet')}
+                  >
+                      Kiểm duyệt Timesheets
+                  </button>
+              )}
+            </div>
+            
+            {activeTab === 'kanban' && sprints.length > 0 && (
+              <div className="flex items-center gap-2">
+                <span className="text-teal-200/60 text-sm">Lọc theo Sprint:</span>
+                <select 
+                  value={selectedSprintId}
+                  onChange={(e) => setSelectedSprintId(e.target.value)}
+                  className="bg-[#1a2f2a] text-teal-200 border border-teal-800/50 rounded-lg px-3 py-1 text-sm focus:outline-none focus:border-teal-500"
                 >
-                    Kiểm duyệt Timesheets
-                </button>
+                  <option value="all">Tất cả</option>
+                  {sprints.map(sprint => (
+                    <option key={sprint._id} value={sprint._id}>{sprint.name}</option>
+                  ))}
+                </select>
+              </div>
             )}
           </div>
         </div>
@@ -74,6 +125,14 @@ export default function WorkspaceKanban() {
             onClose={() => setIsModalOpen(false)} 
             onSuccess={fetchTasks} 
             workspaceId={workspaceId}
+            sprints={sprints}
+        />
+
+        <SprintManagerModal
+            isOpen={isSprintModalOpen}
+            onClose={() => setIsSprintModalOpen(false)}
+            workspaceId={workspaceId || ''}
+            onSprintCreated={fetchSprints}
         />
 
         <InviteMemberModal
@@ -88,7 +147,7 @@ export default function WorkspaceKanban() {
 
         {activeTab === 'kanban' ? (
             <KanbanBoard 
-                tasks={tasks} 
+                tasks={filteredTasks} 
                 loading={loading} 
                 error={error} 
                 onUpdateTaskStatus={handleUpdateTaskStatus} 

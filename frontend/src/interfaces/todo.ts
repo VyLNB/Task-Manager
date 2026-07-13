@@ -14,4 +14,11 @@ export interface ToDoItemFormData {
     workspaceId?: string;
     assigneeId?: string;
     priority?: string;
+    sprintId?: string;
+    estimatedHours?: number;
+    taskType?: string;
+    isPaused?: boolean;
+    isCancelled?: boolean;
+    startDate?: Date | string | null;
+    dueDate?: Date | string | null;
 }

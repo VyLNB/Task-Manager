@@ -21,3 +21,11 @@ export async function updateTask(id: string, data: ToDoItemFormData): Promise<To
 export async function createTask(data: ToDoItemFormData): Promise<ToDoItemInterface> {
     return apiRequest<ToDoItemInterface>("post", `/tasks/`, data);
 }
+
+export async function pauseTask(id: string): Promise<ToDoItemInterface> {
+    return apiRequest<ToDoItemInterface>("put", `/tasks/${id}/pause`);
+}
+
+export async function cancelTask(id: string): Promise<ToDoItemInterface> {
+    return apiRequest<ToDoItemInterface>("put", `/tasks/${id}/cancel`);
+}
