@@ -2,8 +2,9 @@ import { apiRequest } from "./client";
 
 import type { ToDoItemInterface, ToDoItemFormData } from "../interfaces/todo";
 
-export async function getAllToDo(): Promise<ToDoItemInterface[]> {
-    return apiRequest<ToDoItemInterface[]>("get", `/tasks/`);
+export async function getAllToDo(assignee?: string): Promise<ToDoItemInterface[]> {
+    const url = assignee ? `/tasks/?assignee=${assignee}` : `/tasks/`;
+    return apiRequest<ToDoItemInterface[]>("get", url);
 }
 
 export async function getToDoById(id: string): Promise<ToDoItemInterface> {

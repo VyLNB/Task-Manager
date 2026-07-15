@@ -182,8 +182,14 @@ export const LogTimeModal: React.FC<LogTimeModalProps> = ({
                                     required
                                 />
                             </div>
-                            <div className="w-24">
-                                <label className="text-teal-200/60 text-xs mb-1 block">Tổng (Giờ)</label>
+                            <div className="w-20">
+                                <label className="text-teal-200/60 text-xs mb-1 block">Dự kiến</label>
+                                <div className="w-full p-2.5 bg-gray-800/30 text-gray-400 font-bold border border-gray-700/50 rounded-xl text-center text-sm">
+                                    {task.estimatedHours ? `${task.estimatedHours}h` : '-'}
+                                </div>
+                            </div>
+                            <div className="w-20">
+                                <label className="text-teal-200/60 text-xs mb-1 block">Thực tế</label>
                                 <div className="w-full p-2.5 bg-teal-900/30 text-teal-400 font-bold border border-teal-800/50 rounded-xl text-center text-sm">
                                     {hours}h
                                 </div>

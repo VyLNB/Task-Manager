@@ -2,7 +2,7 @@
 import ToDoForm from "../../components/TaskForm";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getAllToDo, updateTask } from "../../services/task";
+import { getToDoById, updateTask } from "../../services/task";
 import type { ToDoItemInterface } from "../../interfaces/todo";
 
 // Interface nội bộ để match với props của ToDoForm
@@ -36,8 +36,7 @@ const TaskDetail = () => {
             try {
                 setLoading(true);
 
-                const allTodos = await getAllToDo();
-                const task = allTodos.find((item: ToDoItemInterface) => item._id === id);
+                const task = await getToDoById(id);
 
                 if (!task) {
                     setError('Không tìm thấy công việc');

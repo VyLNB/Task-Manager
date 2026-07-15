@@ -16,7 +16,7 @@ export function useTasks(workspaceId?: string) {
             const isPM = userObj?.user?.role?.name === 'Project Manager';
 
             const [data, timesheetRes, workspaceTimesheetRes] = await Promise.all([
-                workspaceId ? getWorkspaceTasks(workspaceId) : getAllToDo(),
+                workspaceId ? getWorkspaceTasks(workspaceId) : getAllToDo('me'),
                 workspaceId ? getMyTimesheets({ workspaceId }) : getMyTimesheets(),
                 (workspaceId && isPM) ? getWorkspaceTimesheets(workspaceId) : Promise.resolve({ data: [] })
             ]);

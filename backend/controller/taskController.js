@@ -2,17 +2,20 @@ import TaskModel from "../model/TaskModel.js";
 import { WorkspaceModel } from "../model/WorkspaceModel.js";
 import { checkIsWorkspaceLeader } from "../utils/roleHelper.js";
 
-// lấy tất cả công việc
 export const getAllTasks = async (req, res) => {
     try {
+        const { assignee } = req.query;
         const userWorkspaces = await WorkspaceModel.find({
             $or: [{ leader: req.userId }, { members: req.userId }]
         });
         const workspaceIds = userWorkspaces.map(ws => ws._id);
 
-        const tasks = await TaskModel.find({
-            workspaceId: { $in: workspaceIds }
-        })
+        let filter = { workspaceId: { $in: workspaceIds } };
+        if (assignee === 'me') {
+            filter.assigneeId = req.userId;
+        }
+
+        const tasks = await TaskModel.find(filter)
         .populate('workspaceId', 'name')
         .populate('assigneeId', 'fullName email')
         .sort({ createdAt: -1 });
