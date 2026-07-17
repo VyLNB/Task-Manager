@@ -5,6 +5,12 @@ export interface ToDoItemInterface{
     completed: boolean;
     createdAt: Date;
     updatedAt: Date;
+    editHistory?: {
+        updatedBy: { _id: string; fullName: string; email: string } | string;
+        fieldsChanged: string[];
+        timestamp: Date;
+        note?: string;
+    }[];
 }
 
 export interface ToDoItemFormData {

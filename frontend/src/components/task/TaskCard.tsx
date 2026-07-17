@@ -3,6 +3,7 @@ import { useState } from 'react';
 import type { Task } from '../../interfaces/task';
 import { Calendar, CheckSquare, CheckCircle2, Edit, Clock, Pause, XCircle, Play } from 'lucide-react';
 import { LogTimeModal } from './LogTimeModal';
+import EditTaskModal from '../EditTaskModal';
 import { pauseTask, cancelTask } from '../../services/task';
 export const TaskCard = ({
   task,
@@ -14,6 +15,7 @@ export const TaskCard = ({
   const isCompleted = task.status === 'COMPLETED';
   const navigate = useNavigate();
   const [isLogTimeOpen, setIsLogTimeOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   // Kiểm tra quyền chỉnh sửa
   const userString = localStorage.getItem('user');
@@ -154,12 +156,12 @@ export const TaskCard = ({
         <div className="flex gap-2">
           {canEdit ? (
             <button className="flex-[2] bg-teal-500/10 text-teal-400 border border-teal-500/30 py-2 rounded-xl font-bold text-xs flex items-center justify-center gap-2 hover:bg-teal-500 hover:text-[#0f1f1b] transition-colors"
-              onClick={() => navigate(`/main/tasks/${task.id}`)}>
+              onClick={() => setIsEditModalOpen(true)}>
               <Edit size={14} /> Chỉnh sửa / Chi tiết
             </button>
           ) : (
             <button className="flex-[2] bg-gray-500/10 text-gray-400 border border-gray-500/30 py-2 rounded-xl font-bold text-xs flex items-center justify-center gap-2 hover:bg-gray-600/30 transition-colors"
-              onClick={() => navigate(`/main/tasks/${task.id}`)}>
+              onClick={() => setIsEditModalOpen(true)}>
               Chi tiết
             </button>
           )}
@@ -201,15 +203,25 @@ export const TaskCard = ({
 
       {task.workspaceId && (
         <LogTimeModal
-            isOpen={isLogTimeOpen}
-            onClose={() => setIsLogTimeOpen(false)}
-            task={task}
-            workspaceId={task.workspaceId}
-            onSuccess={() => {
-                // Optional: show toast notification
-                setIsLogTimeOpen(false);
-                window.dispatchEvent(new Event('task_updated'));
-            }}
+          isOpen={isLogTimeOpen}
+          workspaceId={task.workspaceId}
+          task={task}
+          onClose={() => setIsLogTimeOpen(false)}
+          onSuccess={() => {
+            setIsLogTimeOpen(false);
+            window.dispatchEvent(new Event('task_updated'));
+          }}
+        />
+      )}
+
+      {isEditModalOpen && (
+        <EditTaskModal 
+          taskId={task.id} 
+          onClose={() => setIsEditModalOpen(false)} 
+          onSuccess={() => {
+            setIsEditModalOpen(false);
+            window.dispatchEvent(new Event('task_updated'));
+          }}
         />
       )}
     </div>

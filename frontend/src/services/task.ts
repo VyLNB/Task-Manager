@@ -7,6 +7,18 @@ export async function getAllToDo(assignee?: string): Promise<ToDoItemInterface[]
     return apiRequest<ToDoItemInterface[]>("get", url);
 }
 
+export async function deleteTask(id: string): Promise<any> {
+    return apiRequest("delete", `/tasks/${id}`);
+}
+
+export async function approveTaskChangeRequest(requestId: string): Promise<any> {
+    return apiRequest("put", `/task-change-requests/${requestId}/approve`);
+}
+
+export async function rejectTaskChangeRequest(requestId: string): Promise<any> {
+    return apiRequest("put", `/task-change-requests/${requestId}/reject`);
+}
+
 export async function getToDoById(id: string): Promise<ToDoItemInterface> {
     return apiRequest<ToDoItemInterface>("get", `/tasks/${id}`);
 }

@@ -82,6 +82,27 @@ const TaskSchema = new mongoose.Schema(
             type: [String],
             default: []
         },
+        editHistory: [
+            {
+                updatedBy: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: 'Users',
+                    required: true
+                },
+                fieldsChanged: {
+                    type: [String],
+                    required: true
+                },
+                timestamp: {
+                    type: Date,
+                    default: Date.now
+                },
+                note: {
+                    type: String,
+                    required: false
+                }
+            }
+        ]
     },
     { timestamps: true }
 );
