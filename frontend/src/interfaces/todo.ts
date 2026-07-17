@@ -5,6 +5,12 @@ export interface ToDoItemInterface{
     completed: boolean;
     createdAt: Date;
     updatedAt: Date;
+    editHistory?: {
+        updatedBy: { _id: string; fullName: string; email: string } | string;
+        fieldsChanged: string[];
+        timestamp: Date;
+        note?: string;
+    }[];
 }
 
 export interface ToDoItemFormData {
@@ -14,4 +20,11 @@ export interface ToDoItemFormData {
     workspaceId?: string;
     assigneeId?: string;
     priority?: string;
+    sprintId?: string;
+    estimatedHours?: number;
+    taskType?: string;
+    isPaused?: boolean;
+    isCancelled?: boolean;
+    startDate?: Date | string | null;
+    dueDate?: Date | string | null;
 }

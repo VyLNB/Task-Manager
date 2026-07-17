@@ -16,7 +16,7 @@ export function useTasks(workspaceId?: string) {
             const isPM = userObj?.user?.role?.name === 'Project Manager';
 
             const [data, timesheetRes, workspaceTimesheetRes] = await Promise.all([
-                workspaceId ? getWorkspaceTasks(workspaceId) : getAllToDo(),
+                workspaceId ? getWorkspaceTasks(workspaceId) : getAllToDo('me'),
                 workspaceId ? getMyTimesheets({ workspaceId }) : getMyTimesheets(),
                 (workspaceId && isPM) ? getWorkspaceTimesheets(workspaceId) : Promise.resolve({ data: [] })
             ]);
@@ -64,6 +64,13 @@ export function useTasks(workspaceId?: string) {
                     workspaceId: typeof item.workspaceId === 'object' ? item.workspaceId?._id : item.workspaceId,
                     myTimesheet,
                     hasAnyTimesheet: hasAnyTimesheet || !!myTimesheet,
+                    sprintId: item.sprintId,
+                    estimatedHours: item.estimatedHours,
+                    taskType: item.taskType,
+                    isPaused: item.isPaused,
+                    isCancelled: item.isCancelled,
+                    startDate: item.startDate,
+                    dueDate: item.dueDate
                 };
             });
             setTasks(convertedTasks);

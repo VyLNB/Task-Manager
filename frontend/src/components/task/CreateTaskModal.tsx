@@ -4,15 +4,17 @@ import { createTask } from '../../services/task';
 import { getWorkspaces } from '../../services/workspace';
 import type { ToDoItemFormData } from '../../interfaces/todo';
 import type { WorkspaceInterface } from '../../interfaces/workspace';
+import type { Sprint } from '../../interfaces/sprint';
 
 interface CreateTaskModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSuccess: () => void;
     workspaceId?: string;
+    sprints?: Sprint[];
 }
 
-export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ isOpen, onClose, onSuccess, workspaceId }) => {
+export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ isOpen, onClose, onSuccess, workspaceId, sprints = [] }) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [workspaces, setWorkspaces] = useState<WorkspaceInterface[]>([]);
 
@@ -33,7 +35,12 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ isOpen, onClos
                 status: 'TO DO',
                 workspaceId: formData.workspaceId || workspaceId,
                 assigneeId: formData.assigneeId,
-                priority: formData.priority
+                priority: formData.priority,
+                sprintId: formData.sprintId,
+                estimatedHours: formData.estimatedHours,
+                taskType: formData.taskType,
+                startDate: formData.startDate,
+                dueDate: formData.deadline || formData.dueDate, // TaskForm uses deadline currently
             };
             await createTask(payload);
             onSuccess();
@@ -61,6 +68,7 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ isOpen, onClos
                     onCancel={onClose}
                     workspaces={workspaces}
                     workspaceId={workspaceId}
+                    sprints={sprints}
                 />
             </div>
         </div>

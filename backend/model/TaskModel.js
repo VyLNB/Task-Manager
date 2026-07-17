@@ -26,6 +26,12 @@ const TaskSchema = new mongoose.Schema(
             required: true,
             description: "Task này thuộc về Nhóm/Dự án nào"
         },
+        sprintId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'sprints',
+            required: false,
+            description: "Task thuộc về Sprint nào (nếu có)"
+        },
         creatorId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Users',
@@ -43,6 +49,27 @@ const TaskSchema = new mongoose.Schema(
             enum: ['LOW', 'MEDIUM', 'HIGH'],
             default: 'MEDIUM'
         },
+        estimatedHours: {
+            type: Number,
+            required: false,
+            description: "Số giờ dự kiến để hoàn thành"
+        },
+        taskType: {
+            type: String,
+            enum: ['Planned', 'Sub-task', 'Bug Fixing', 'Ad-hoc'],
+            default: 'Planned',
+            description: "Loại công việc"
+        },
+        isPaused: {
+            type: Boolean,
+            default: false,
+            description: "PM tạm dừng task này"
+        },
+        isCancelled: {
+            type: Boolean,
+            default: false,
+            description: "PM hủy task này"
+        },
         dueDate: {
             type: Date,
             required: false
@@ -55,11 +82,33 @@ const TaskSchema = new mongoose.Schema(
             type: [String],
             default: []
         },
+        editHistory: [
+            {
+                updatedBy: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: 'Users',
+                    required: true
+                },
+                fieldsChanged: {
+                    type: [String],
+                    required: true
+                },
+                timestamp: {
+                    type: Date,
+                    default: Date.now
+                },
+                note: {
+                    type: String,
+                    required: false
+                }
+            }
+        ]
     },
     { timestamps: true }
 );
 
 TaskSchema.index({ workspaceId: 1 });
+TaskSchema.index({ sprintId: 1 });
 TaskSchema.index({ assigneeId: 1 });
 
 const TaskModel = mongoose.model('tasks', TaskSchema, 'tasks');

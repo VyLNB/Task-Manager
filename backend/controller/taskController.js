@@ -1,19 +1,26 @@
 import TaskModel from "../model/TaskModel.js";
 import { WorkspaceModel } from "../model/WorkspaceModel.js";
+import { TimesheetModel } from "../model/TimesheetModel.js";
+import { TaskChangeRequestModel } from "../model/TaskChangeRequestModel.js";
+import { checkIsWorkspaceLeader } from "../utils/roleHelper.js";
 
-// lấy tất cả công việc
 export const getAllTasks = async (req, res) => {
     try {
+        const { assignee } = req.query;
         const userWorkspaces = await WorkspaceModel.find({
             $or: [{ leader: req.userId }, { members: req.userId }]
         });
         const workspaceIds = userWorkspaces.map(ws => ws._id);
 
-        const tasks = await TaskModel.find({
-            workspaceId: { $in: workspaceIds }
-        })
+        let filter = { workspaceId: { $in: workspaceIds } };
+        if (assignee === 'me') {
+            filter.assigneeId = req.userId;
+        }
+
+        const tasks = await TaskModel.find(filter)
         .populate('workspaceId', 'name')
         .populate('assigneeId', 'fullName email')
+        .populate('editHistory.updatedBy', 'fullName email')
         .sort({ createdAt: -1 });
 
         res.status(200).json(tasks);
@@ -37,6 +44,7 @@ export const getTasksByWorkspace = async (req, res) => {
         const tasks = await TaskModel.find({ workspaceId })
             .populate('workspaceId', 'name')
             .populate('assigneeId', 'fullName email')
+            .populate('editHistory.updatedBy', 'fullName email')
             .sort({ createdAt: -1 });
         res.status(200).json(tasks);
     } catch (error) {
@@ -48,7 +56,8 @@ export const getTaskById = async (req, res) => {
     try {
         const task = await TaskModel.findById(req.params.id)
             .populate('workspaceId', 'name')
-            .populate('assigneeId', 'fullName email');
+            .populate('assigneeId', 'fullName email')
+            .populate('editHistory.updatedBy', 'fullName email');
         if (!task) {
             return res.status(404).json({ message: "Không tìm thấy công việc" });
         }
@@ -71,7 +80,7 @@ export const getTaskById = async (req, res) => {
 // tạo công việc mới
 export const createTask = async (req, res) => {
     try {
-        const { workspaceId, title, description, priority, dueDate, startDate, tags, assigneeId } = req.body;
+        const { workspaceId, title, description, priority, dueDate, startDate, tags, assigneeId, sprintId, estimatedHours, taskType } = req.body;
 
         if (!workspaceId) {
             return res.status(400).json({ message: "workspaceId là bắt buộc" });
@@ -86,12 +95,25 @@ export const createTask = async (req, res) => {
             return res.status(403).json({ message: "Bạn không có quyền tạo công việc trong workspace này" });
         }
 
+        const isLeader = await checkIsWorkspaceLeader(workspaceId, req.userId);
+        
+        let finalTaskType = taskType || 'Planned';
+        if (!isLeader) {
+            const allowedUnplannedTypes = ['Sub-task', 'Bug Fixing', 'Ad-hoc'];
+            if (!allowedUnplannedTypes.includes(finalTaskType)) {
+                return res.status(400).json({ message: "Thành viên chỉ được tạo task phát sinh (Sub-task, Bug Fixing, Ad-hoc)" });
+            }
+        }
+
         const newTask = new TaskModel({
             title,
             description,
             creatorId: req.userId,
             workspaceId,
+            sprintId: sprintId || null,
             priority,
+            estimatedHours,
+            taskType: finalTaskType,
             dueDate,
             startDate,
             tags,
@@ -125,38 +147,139 @@ export const updateTask = async (req, res) => {
             return res.status(403).json({ message: "Bạn không có quyền truy cập công việc này" });
         }
 
-        // Check if user is Assignee, Creator, or Workspace Leader
+        const isLeader = await checkIsWorkspaceLeader(workspace._id, req.userId);
         const isAssignee = task.assigneeId && task.assigneeId.toString() === req.userId;
         const isCreator = task.creatorId && task.creatorId.toString() === req.userId;
-        const isLeader = workspace.leader && workspace.leader.toString() === req.userId;
 
         if (!isAssignee && !isCreator && !isLeader) {
             return res.status(403).json({ message: "Chỉ người được giao việc hoặc Quản lý dự án mới có quyền cập nhật công việc này" });
         }
 
         const updatedData = {};
+        const fieldsChanged = [];
+        const timeChanges = {};
+        
+        // Check if task has any timesheets logged
+        const timesheetCount = await TimesheetModel.countDocuments({ taskId: task._id });
+        const hasTimesheets = timesheetCount > 0;
 
-        if (req.body.title !== undefined) updatedData.title = req.body.title;
-        if (req.body.description !== undefined) updatedData.description = req.body.description;
-        if (req.body.status !== undefined) updatedData.status = req.body.status;
-        if (req.body.position !== undefined) updatedData.position = req.body.position;
-        if (req.body.priority !== undefined) updatedData.priority = req.body.priority;
-        if (req.body.dueDate !== undefined) updatedData.dueDate = req.body.dueDate;
-        if (req.body.startDate !== undefined) updatedData.startDate = req.body.startDate;
-        if (req.body.tags !== undefined) updatedData.tags = req.body.tags;
-        if (req.body.assigneeId !== undefined) updatedData.assigneeId = req.body.assigneeId;
+        const checkAndAdd = (field, newValue, oldVal) => {
+            if (newValue !== undefined && newValue !== oldVal && String(newValue) !== String(oldVal)) {
+                updatedData[field] = newValue;
+                fieldsChanged.push(field);
+            }
+        };
 
-        const updatedTask = await TaskModel.findByIdAndUpdate(
-            req.params.id,
-            updatedData,
-            { new: true, runValidators: true }
-        );
+        const checkTimeChange = (field, newValue, oldVal) => {
+            if (newValue !== undefined && newValue !== oldVal && String(newValue) !== String(oldVal)) {
+                // If has timesheets and not PM, it must be approved
+                if (hasTimesheets && !isLeader) {
+                    timeChanges[field] = { old: oldVal, new: newValue };
+                } else {
+                    updatedData[field] = newValue;
+                    fieldsChanged.push(field);
+                }
+            }
+        };
 
-        res.status(200).json(updatedTask);
+        checkAndAdd('title', req.body.title, task.title);
+        checkAndAdd('description', req.body.description, task.description);
+        checkAndAdd('status', req.body.status, task.status);
+        checkAndAdd('position', req.body.position, task.position);
+        checkAndAdd('priority', req.body.priority, task.priority);
+        checkAndAdd('tags', req.body.tags, task.tags);
+        checkAndAdd('assigneeId', req.body.assigneeId, task.assigneeId);
+        checkAndAdd('sprintId', req.body.sprintId, task.sprintId);
+        checkAndAdd('taskType', req.body.taskType, task.taskType);
+
+        checkTimeChange('estimatedHours', req.body.estimatedHours, task.estimatedHours);
+        
+        // Handle dates properly
+        if (req.body.startDate !== undefined) {
+            const newStartDate = req.body.startDate ? new Date(req.body.startDate).toISOString() : null;
+            const oldStartDate = task.startDate ? new Date(task.startDate).toISOString() : null;
+            checkTimeChange('startDate', req.body.startDate, oldStartDate);
+        }
+        
+        if (req.body.dueDate !== undefined) {
+            const newDueDate = req.body.dueDate ? new Date(req.body.dueDate).toISOString() : null;
+            const oldDueDate = task.dueDate ? new Date(task.dueDate).toISOString() : null;
+            checkTimeChange('dueDate', req.body.dueDate, oldDueDate);
+        }
+
+        if (Object.keys(timeChanges).length > 0) {
+            const newRequest = new TaskChangeRequestModel({
+                taskId: task._id,
+                workspaceId: task.workspaceId,
+                requestedBy: req.userId,
+                changes: timeChanges
+            });
+            await newRequest.save();
+        }
+
+        let note = "Cập nhật công việc";
+        if (Object.keys(timeChanges).length > 0) {
+            note += ". Đã gửi yêu cầu thay đổi thời gian chờ duyệt.";
+            // Add time fields to history too, even though they are pending
+            fieldsChanged.push(...Object.keys(timeChanges));
+        }
+
+        // Only update if there are changes
+        if (fieldsChanged.length > 0) {
+            const newHistory = {
+                updatedBy: req.userId,
+                fieldsChanged: fieldsChanged,
+                note: note
+            };
+
+            const updatedTask = await TaskModel.findByIdAndUpdate(
+                req.params.id,
+                { 
+                    $set: updatedData,
+                    $push: { editHistory: newHistory }
+                },
+                { new: true, runValidators: true }
+            );
+            return res.status(200).json(updatedTask);
+        }
+
+        res.status(200).json(task);
     } catch (error) {
         res.status(500).json({
             message: "Lỗi khi cập nhật công việc",
             error: error.message
         });
+    }
+};
+
+export const pauseTask = async (req, res) => {
+    try {
+        const task = await TaskModel.findById(req.params.id);
+        if (!task) return res.status(404).json({ message: "Không tìm thấy công việc" });
+
+        const isLeader = await checkIsWorkspaceLeader(task.workspaceId, req.userId);
+        if (!isLeader) return res.status(403).json({ message: "Chỉ PM mới có quyền tạm dừng công việc" });
+
+        task.isPaused = !task.isPaused;
+        await task.save();
+        res.status(200).json(task);
+    } catch (error) {
+        res.status(500).json({ message: "Lỗi khi tạm dừng công việc", error: error.message });
+    }
+};
+
+export const cancelTask = async (req, res) => {
+    try {
+        const task = await TaskModel.findById(req.params.id);
+        if (!task) return res.status(404).json({ message: "Không tìm thấy công việc" });
+
+        const isLeader = await checkIsWorkspaceLeader(task.workspaceId, req.userId);
+        if (!isLeader) return res.status(403).json({ message: "Chỉ PM mới có quyền hủy công việc" });
+
+        task.isCancelled = !task.isCancelled;
+        await task.save();
+        res.status(200).json(task);
+    } catch (error) {
+        res.status(500).json({ message: "Lỗi khi hủy công việc", error: error.message });
     }
 };
