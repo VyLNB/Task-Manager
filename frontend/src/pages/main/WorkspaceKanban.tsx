@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { CheckSquare, User } from 'lucide-react';
+import { CheckSquare, User, Sparkles } from 'lucide-react';
 import { KanbanBoard } from '../../components/task/KanbanBoard';
 import { WorkspaceTimesheets } from '../../components/workspace/WorkspaceTimesheets';
 import { CreateTaskModal } from '../../components/task/CreateTaskModal';
 import { InviteMemberModal } from '../../components/workspace/InviteMemberModal';
 import { SprintManagerModal } from '../../components/workspace/SprintManagerModal';
+import { AIEvaluationModal } from '../../components/workspace/AIEvaluationModal';
 import { useTasks } from '../../hooks/useTasks';
 import { usePermission } from '../../hooks/usePermission';
 import { useParams } from 'react-router-dom';
@@ -19,6 +20,7 @@ export default function WorkspaceKanban() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const [isSprintModalOpen, setIsSprintModalOpen] = useState(false);
+  const [isAIModalOpen, setIsAIModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'kanban' | 'timesheet'>('kanban');
   const [sprints, setSprints] = useState<Sprint[]>([]);
   const [selectedSprintId, setSelectedSprintId] = useState<string>('all');
@@ -62,6 +64,15 @@ export default function WorkspaceKanban() {
                   className="bg-[#1a2f2a] text-teal-200 px-4 py-2 rounded-full border border-teal-800/50 
                             font-semibold text-sm hover:bg-teal-900/40 transition-colors">
                   Quản lý Sprint
+                </button>
+              )}
+              {isProjectManager && (
+                <button 
+                  onClick={() => setIsAIModalOpen(true)}
+                  className="bg-[#1a2f2a] text-teal-200 px-4 py-2 rounded-full border border-teal-800/50 
+                            font-semibold text-sm flex items-center 
+                            gap-2 hover:bg-teal-900/40 transition-colors">
+                  <Sparkles size={16} className="text-teal-400" /> Đánh giá AI
                 </button>
               )}
               {isProjectManager && (
@@ -133,6 +144,12 @@ export default function WorkspaceKanban() {
             onClose={() => setIsSprintModalOpen(false)}
             workspaceId={workspaceId || ''}
             onSprintCreated={fetchSprints}
+        />
+
+        <AIEvaluationModal
+            isOpen={isAIModalOpen}
+            onClose={() => setIsAIModalOpen(false)}
+            workspaceId={workspaceId || ''}
         />
 
         <InviteMemberModal

@@ -11,7 +11,8 @@ import {
     Shield,
     LogOut,
     File,
-    Clock
+    Clock,
+    Sparkles
 } from "lucide-react";
 import { signout } from "../../services/auth";
 import { usePermission } from "../../hooks/usePermission";
@@ -76,6 +77,11 @@ const SideBar: React.FC<SidebarProps> = ({ isMobileOpen, setIsMobileOpen, onOpen
                 id: "timesheet",
                 label: "Timesheet",
                 icon: <Clock size={20} />
+            },
+            {
+                id: "ai-history",
+                label: "Lịch sử AI",
+                icon: <Sparkles size={20} />
             }
         );
     }

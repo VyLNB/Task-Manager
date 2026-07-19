@@ -12,6 +12,7 @@ const env = {
   CLIENT_URL: process.env.CLIENT_URL,
   ACCESS_TOKEN_EXPIRES_IN: process.env.ACCESS_TOKEN_EXPIRES_IN,
   REFRESH_TOKEN_EXPIRES_IN: process.env.REFRESH_TOKEN_EXPIRES_IN,
+  GEMINI_API_KEY: process.env.GEMINI_API_KEY
 };
 
 export default env;

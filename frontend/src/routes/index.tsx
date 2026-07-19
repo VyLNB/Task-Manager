@@ -11,6 +11,7 @@ import { MyTimesheetPage } from "../pages/main/MyTimesheetPage";
 import PersonnelPage from "../pages/main/admin/PersonnelPage";
 import ProjectPage from "../pages/main/admin/ProjectPage";
 import ProtectedRoute from "../components/common/ProtectedRoute";
+import AIEvaluationHistoryPage from "../pages/main/AIEvaluationHistoryPage";
 
 
 const router = createBrowserRouter([
@@ -69,6 +70,14 @@ const router = createBrowserRouter([
                 element: (
                     <ProtectedRoute requireMember={true}>
                         <MyTimesheetPage/>
+                    </ProtectedRoute>
+                )
+            },
+            {
+                path: "ai-history",
+                element: (
+                    <ProtectedRoute requireMember={true}>
+                        <AIEvaluationHistoryPage/>
                     </ProtectedRoute>
                 )
             },
