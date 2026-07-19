@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { getToDoById, updateTask } from '../services/task';
 import ToDoForm from './TaskForm';
 import { X, Clock, History } from 'lucide-react';
-import type { ToDoItemInterface, ToDoItemFormData } from '../interfaces/todo';
+import type { ToDoItemInterface } from '../interfaces/todo';
 
 interface EditTaskModalProps {
     taskId: string;
